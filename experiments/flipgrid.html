@@ -1,0 +1,28 @@
+<html>
+<head>
+<style type="text/css">
+</style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script> 
+<script type="text/javascript">
+
+$(document).ready(function(){
+    var gw=10;
+    var table_html="";
+    for(var i=0;i<gw;i++){
+        table_html+="<tr>";
+        for(var j=0;j<gw;j++){
+            table_html+="<td></td>";
+        }
+        table_html+="</tr>";
+    }
+    $("#grid").html(table_html);
+});
+
+</script>
+<body>
+<table >
+<tbody id="grid">
+</tbody>
+</table>
+</body>
+</html>
