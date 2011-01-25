@@ -120,7 +120,7 @@ Game.prototype.tick = function(){
     
     // fire if down
     if(this.mdown && this.gun.charge >= 3){
-        this.projectiles.push( {x:this.gun.ax*10,y:this.gun.ay*10, life:0,damage:10,dx:this.gun.ax*7,dy:this.gun.ay*7,r:3} );
+        this.projectiles.push( {x:this.gun.ax*10,y:this.gun.ay*10, life:0,damage:10,dx:this.gun.ax*9,dy:this.gun.ay*9,r:3} );
         this.gun.charge -= 5;  // deduct power 
         this.fired++;
     }
