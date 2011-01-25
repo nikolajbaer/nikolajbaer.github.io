@@ -14,10 +14,15 @@ function init(){
     if(inv){ clearInterval(inv); }
     inv=setInterval(call_tick,demo.tickTime);
     demo.reset(window.innerWidth,window.innerHeight);
-    $("#thecanvas").mousemove(function(e){ demo.onmousemove(e); });
-    $("#thecanvas").mousedown(function(e){ demo.onmousedown(e); });
-    $("#thecanvas").mouseup(function(e){ demo.onmouseup(e); });
-
+    if( demo.onmousemove){
+        $("#thecanvas").mousemove(function(e){ demo.onmousemove(e); });
+    }
+    if( demo.onmousedown ){
+        $("#thecanvas").mousedown(function(e){ demo.onmousedown(e); });
+    }
+    if( demo.onmouseup ){
+        $("#thecanvas").mouseup(function(e){ demo.onmouseup(e); });
+    }
 }
 
 function call_tick(){
