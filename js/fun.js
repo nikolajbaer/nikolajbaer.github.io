@@ -14,6 +14,10 @@ function init(){
     if(inv){ clearInterval(inv); }
     inv=setInterval(call_tick,demo.tickTime);
     demo.reset(window.innerWidth,window.innerHeight);
+    $("#thecanvas").mousemove(function(e){ demo.onmousemove(e); });
+    $("#thecanvas").mousedown(function(e){ demo.onmousedown(e); });
+    $("#thecanvas").mouseup(function(e){ demo.onmouseup(e); });
+
 }
 
 function call_tick(){
