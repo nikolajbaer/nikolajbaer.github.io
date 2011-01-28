@@ -14,6 +14,10 @@ function distanceBetween(p1,p2){
 
 /* game class */
 
+// Game constants
+var bspd = 15; // bullet speed
+var br = 3; // bullet radius 
+
 Game=function(context,width,height,finished_callback){
     // Wise to hang onto these
     this.ctx=context;
@@ -39,7 +43,7 @@ Game=function(context,width,height,finished_callback){
 }
 
 Game.prototype.spawnTarget = function(){
-    var t = {x:-1*(this.width/2),y:(Math.random()*(this.height/2-30)), r:Math.random()*15+10,strength:20};
+    var t = {x:-1*(this.width/2),y:(Math.random()*(this.height/2-30)), r:Math.random()*15+10,strength:10};
     if(Math.random()>0.5){ t.y*=-1; } // randomly place above or below
     t.dx=Math.random()*5+2;
     t.dy = 0;
@@ -62,6 +66,25 @@ Game.prototype.aim = function(){
     this.gun.ay = this.gun.ay/l;
 }
 
+Game.prototype.destroyTarget = function(i){
+    // chop out the target
+    var t = this.targets[i];
+    this.targets.splice(i,1);
+    // one last screen clean
+    this.dirtyrects.push([t.x-t.r,t.y-t.r,t.r*2,t.r*2]); 
+    var spd=20;
+    var r=3;
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:spd,dy:0,r:r});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:spd,dy:spd,r:r});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:0,dy:spd,r:r});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:-spd,dy:spd,r:r});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:-spd,dy:0,r:r});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:-spd,dy:-spd,r:r});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:0,dy:-spd,r:r});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:spd,dy:-spd,r:r});
+    // and add new target
+    this.targets.push(this.spawnTarget());
+}
 
 Game.prototype.tick = function(){
     // aim gun
@@ -92,10 +115,12 @@ Game.prototype.tick = function(){
             if(this.targets[j].strength <= 0){ continue; }
             var d = distanceBetween(p,this.targets[j])
             if(d < p.r+this.targets[j].r){
-                console.log("Hit!");
                 this.hits++;
                 this.targets[j].strength--;
                 this.projectiles.splice(i,1);
+                if(this.targets[j].strength==0){
+                    this.destroyTarget(j);
+                }
             }
         }
     }
@@ -120,7 +145,7 @@ Game.prototype.tick = function(){
     
     // fire if down
     if(this.mdown && this.gun.charge >= 3){
-        this.projectiles.push( {x:this.gun.ax*10,y:this.gun.ay*10, life:0,damage:10,dx:this.gun.ax*9,dy:this.gun.ay*9,r:3} );
+        this.projectiles.push( {x:this.gun.ax*10,y:this.gun.ay*10, life:0,damage:10,dx:this.gun.ax*bspd,dy:this.gun.ay*bspd,r:br} );
         this.gun.charge -= 5;  // deduct power 
         this.fired++;
     }
