@@ -30,6 +30,9 @@ Game=function(context,width,height,finished_callback){
 
     this.fired = 0;
     this.hits = 0;
+    this.level = 2; // raise to make balls go faster
+    this.score = 0;
+    this.life = 10;
 
     // Requires tickTime
     this.tickTime=50;
@@ -40,12 +43,13 @@ Game=function(context,width,height,finished_callback){
     this.targets = [];
     this.dirtyrects=[];
     // NOTE: do not use this.finished, as this will be an assigned callback
+    $("#msg").animate({opacity:0.0,time:1000});
 }
 
 Game.prototype.spawnTarget = function(){
-    var t = {x:-1*(this.width/2),y:(Math.random()*(this.height/2-30)), r:Math.random()*15+10,strength:10};
+    var t = {x:-1*(this.width/2),y:(Math.random()*(this.height/2-30)), r:Math.random()*5+20,strength:10+this.level};
     if(Math.random()>0.5){ t.y*=-1; } // randomly place above or below
-    t.dx=Math.random()*5+2;
+    t.dx=Math.random()*2+this.level;
     t.dy = 0;
     return t; 
 }
@@ -117,9 +121,12 @@ Game.prototype.tick = function(){
             if(d < p.r+this.targets[j].r){
                 this.hits++;
                 this.targets[j].strength--;
+                this.targets[j].r--; // decrease the radius too
                 this.projectiles.splice(i,1);
                 if(this.targets[j].strength==0){
                     this.destroyTarget(j);
+                    this.score += 1;
+                    //var level = Math.ceiling(Math.sqrt(this.score/4));
                 }
             }
         }
@@ -128,7 +135,7 @@ Game.prototype.tick = function(){
     // TODO score based upon size/speed/distance from gun
 
     // update targets
-    if(this.targets.length == 0){
+    while(this.targets.length < this.level){
         this.targets.push(this.spawnTarget());
     }
     // TODO
@@ -139,6 +146,10 @@ Game.prototype.tick = function(){
         t.y += t.dy; 
         if(Math.abs(t.x)-t.r > this.width/2 || Math.abs(t.y)-t.r > this.height/2){
             this.targets.splice(i,1);
+            this.life--;
+            if(this.life == 0){
+                this.finished();
+            }
         }
       
     }
@@ -152,7 +163,7 @@ Game.prototype.tick = function(){
 
     this.draw(); 
     // this.finished();
-    $("#hitrate").html("Hit Rate: "+this.getHitRate());
+    $("#hitrate").html("Score: "+this.score + " Level: "+this.level+" Life: "+this.life);
 }
 
 Game.prototype.getHitRate = function(){
