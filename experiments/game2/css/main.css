@@ -1,0 +1,12 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    background-color: #111;
+}
+
+.particle {
+    position: absolute;
+}
+.particle_trans {
+    -webkit-transition: -webkit-transform 0.25s linear;
+}
