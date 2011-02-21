@@ -1,0 +1,21 @@
+<html>
+<head>
+<script tye="text/javascript">
+
+console.log("grah?");
+
+window.addEventListener("load",function(e){
+    var e = document.createEvent("Event");
+    e.initEvent("Grah",true,false);
+    console.log("adding event");
+    window.addEventListener("Grah",function(e){
+        console.log("Das ist doch Grahnix "+e.target+ " -- "+this);
+    },false); 
+    document.dispatchEvent(e);
+},false);
+
+</script>
+</head>
+<body>
+</body>
+</html>

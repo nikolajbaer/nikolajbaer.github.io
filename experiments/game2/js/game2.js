@@ -47,7 +47,7 @@ function update_particle(p){
     var d = normalize(vsub(p,mpos));
     p.x += p.dx*d.x;
     p.y += p.dy*d.y;
-    $("#particle_"+p.id).css({"-webkit-transform":"translate("+p.x+"px,"+p.y+"px)"});
+    $("#particle_"+p.id).css({"-webkit-transform":"translate("+p.x+","+p.y+")"});
 }
 
 function tick(){

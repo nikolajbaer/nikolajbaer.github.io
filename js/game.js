@@ -1,6 +1,11 @@
 /* Demo Base */
 /* util */
 
+var G = 10;
+var max_grav_debug = 0;
+var TIMESTEP = 0.05;
+// TODO Tune gravity
+
 // the angle from v1 to v2, provided center at 0,0
 function angleTo(v1,v2){
     var a1 = Math.atan(v1.y/v1.x);
@@ -10,6 +15,27 @@ function angleTo(v1,v2){
 
 function distanceBetween(p1,p2){
     return Math.sqrt(Math.pow(p2.x-p1.x,2) + Math.pow(p2.y-p1.y,2));
+}
+
+function gravityVector(b1,b2){
+    var d = distanceBetween(b1,b2);
+    var f = G * ((b1.m*b2.m)/d);
+    f = f * TIMESTEP;
+    var mag = f/b2.m; // we are moving b2
+    var gv = unitize({x:b2.x-b1.x,y:b2.y-b1.y}); // TODO is this the right way?
+    return {x:gv.x*mag,y:gv.y*mag}; 
+}
+
+function length(v){
+    return Math.sqrt(v.x*v.x + v.y*v.y);
+}
+
+function unitize(v){
+    var d = length(v);
+    if( d == 0){
+        return {x:0,y:1};
+    }
+    return {x:v.x/d,y:v.y/d};
 }
 
 /* game class */
@@ -33,9 +59,10 @@ Game=function(context,width,height,finished_callback){
     this.level = 2; // raise to make balls go faster
     this.score = 0;
     this.life = 10;
+    this.maxd = 0.0; // gravity field tracking
 
     // Requires tickTime
-    this.tickTime=50;
+    this.tickTime=1000*TIMESTEP;
 
     // Additional Initialization
     this.gun={x:0,y:0,r:0.0,ammo:100,ax:0,ay:0,charge:0};
@@ -47,7 +74,12 @@ Game=function(context,width,height,finished_callback){
 }
 
 Game.prototype.spawnTarget = function(){
-    var t = {x:-1*(this.width/2),y:(Math.random()*(this.height/2-30)), r:Math.random()*5+20,strength:10+this.level};
+    var t = {   x:-1*(this.width/2),
+                y:(Math.random()*(this.height/2-30)), 
+                r:Math.random()*5+20,
+                strength:10+this.level,
+                m:Math.random()*15000+1000000
+            };
     if(Math.random()>0.5){ t.y*=-1; } // randomly place above or below
     t.dx=Math.random()*2+this.level;
     t.dy = 0;
@@ -78,14 +110,14 @@ Game.prototype.destroyTarget = function(i){
     this.dirtyrects.push([t.x-t.r,t.y-t.r,t.r*2,t.r*2]); 
     var spd=20;
     var r=3;
-    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:spd,dy:0,r:r});
-    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:spd,dy:spd,r:r});
-    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:0,dy:spd,r:r});
-    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:-spd,dy:spd,r:r});
-    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:-spd,dy:0,r:r});
-    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:-spd,dy:-spd,r:r});
-    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:0,dy:-spd,r:r});
-    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:spd,dy:-spd,r:r});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:spd,dy:0,r:r,m:0.1});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:spd,dy:spd,r:r,m:0.1});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:0,dy:spd,r:r,m:0.1});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:-spd,dy:spd,r:r,m:0.1});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:-spd,dy:0,r:r,m:0.1});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:-spd,dy:-spd,r:r,m:0.1});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:0,dy:-spd,r:r,m:0.1});
+    this.projectiles.push( {x:t.x,y:t.y,life:0,damage:1,dx:spd,dy:-spd,r:r,m:0.1});
     // and add new target
     this.targets.push(this.spawnTarget());
 }
@@ -104,8 +136,19 @@ Game.prototype.tick = function(){
     for(var i=0;i<this.projectiles.length;i++){
         var p = this.projectiles[i];
         this.dirtyrects.push([p.x-p.r,p.y-p.r,p.r*2,p.r*2]);
-        p.x += p.dx;
-        p.y += p.dy;
+        // acceleration from mass
+        var g={x:p.dx,y:p.dy};
+        if(max_grav_debug<10){
+            for(var j=0;j<this.targets.length;j++){
+                var gv = gravityVector(this.targets[j],p);
+                //console.log("applying "+gv.x+","+gv.y);
+                g.x+=gv.x;
+                g.y+=gv.y;
+            }
+            max_grav_debug++;
+        }
+        p.x += g.x;
+        p.y += g.y;
         p.life++;
         // Check bounds first
         if(Math.abs(p.x)-p.r > this.width/2 || Math.abs(p.y)-p.r > this.height/2){
@@ -156,7 +199,7 @@ Game.prototype.tick = function(){
     
     // fire if down
     if(this.mdown && this.gun.charge >= 3){
-        this.projectiles.push( {x:this.gun.ax*10,y:this.gun.ay*10, life:0,damage:10,dx:this.gun.ax*bspd,dy:this.gun.ay*bspd,r:br} );
+        this.projectiles.push( {x:this.gun.ax*10,y:this.gun.ay*10, life:0,damage:10,dx:this.gun.ax*bspd,dy:this.gun.ay*bspd,r:br,m:10} );
         this.gun.charge -= 5;  // deduct power 
         this.fired++;
     }
@@ -164,6 +207,9 @@ Game.prototype.tick = function(){
     this.draw(); 
     // this.finished();
     $("#hitrate").html("Score: "+this.score + " Level: "+this.level+" Life: "+this.life);
+}
+
+Game.prototype.spawnParticle = function(){
 }
 
 Game.prototype.getHitRate = function(){
@@ -191,12 +237,17 @@ Game.prototype.draw = function(){
     // draw from center
     this.ctx.save();
     this.ctx.translate(this.width/2,this.height/2); 
+
  
     // clear dirty rectangles
     while(this.dirtyrects.length){ 
         var r=this.dirtyrects.pop();
         this.ctx.clearRect(r[0],r[1],r[2],r[3]);
     }
+
+    
+    // draw gravity flow vectors
+    this.drawTellTales(21);
    
     // draw all projectiles
     this.drawProjectiles();
@@ -207,11 +258,45 @@ Game.prototype.draw = function(){
     this.ctx.restore();
 }
 
+Game.prototype.drawTellTales = function(grid_size){
+    this.ctx.save()
+    var grid_w=grid_size;
+    var grid_h=grid_size;
+    var amp=10;
+    this.ctx.strokeStyle="#fff";
+    var w=this.width-2;
+    var h=this.height-2;
+    for(var i=0;i<grid_w;i++){
+        for(var j=0;j<grid_h;j++){
+            var gv = {x:0.0,y:0.0};
+            var p = {x:(w/grid_w)*i-(w/2),y:(h/grid_h)*j-(h/2),m:100};
+            var maxd=0;
+            for(var k=0;k<this.targets.length; k++){
+                var gvt = gravityVector(p,this.targets[k]);
+                gv.x += gvt.x;
+                gv.y += gvt.y;
+            }
+            var gvd = length(gv);
+            if(gvd>this.maxd){
+                this.maxd=gvd;
+            }
+            var gvn = unitize(gv);
+            var ampv = amp*(gvd/this.maxd);
+            var t = {x:gvn.x*ampv,y:gvn.y*ampv};
+            this.ctx.moveTo(p.x,p.y);
+            this.ctx.lineTo(t.x+p.x,t.y+p.y);
+            this.dirtyrects.push([p.x-amp-1,p.y-amp-1,2*amp+1,2*amp+1]);
+        } 
+    }
+    this.ctx.stroke();
+    this.ctx.restore();
+}
+
 Game.prototype.drawGun = function(){
         this.ctx.save();
         this.ctx.rotate(this.gun.r);
         this.ctx.fillStyle = "white";
-        this.ctx.strokeStyle = "white";
+        this.ctx.strokeStyle = "none";
         this.ctx.beginPath();
         this.ctx.arc(0,0,10,0,Math.PI*2,true);
         this.ctx.closePath();
