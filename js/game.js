@@ -1,7 +1,7 @@
 /* Demo Base */
 /* util */
 
-var G = 10;
+var G = 100;
 var max_grav_debug = 0;
 var TIMESTEP = 0.05;
 // TODO Tune gravity
@@ -17,6 +17,7 @@ function distanceBetween(p1,p2){
     return Math.sqrt(Math.pow(p2.x-p1.x,2) + Math.pow(p2.y-p1.y,2));
 }
 
+// TODO should i really be using gravity?
 function gravityVector(b1,b2){
     var d = distanceBetween(b1,b2);
     var f = G * ((b1.m*b2.m)/d);
@@ -78,7 +79,7 @@ Game.prototype.spawnTarget = function(){
                 y:(Math.random()*(this.height/2-30)), 
                 r:Math.random()*5+20,
                 strength:10+this.level,
-                m:Math.random()*15000+1000000
+                m:Math.random()*150+100
             };
     if(Math.random()>0.5){ t.y*=-1; } // randomly place above or below
     t.dx=Math.random()*2+this.level;

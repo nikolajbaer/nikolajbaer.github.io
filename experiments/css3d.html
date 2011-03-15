@@ -9,26 +9,41 @@
         height: 100%;
         background-color: #111;
     }
-    #target {
+    .target {
         position: absolute;
         top:50%;
         left: 50%;
         width: 300px;
-        height: 300px;
+        height: 200px;
         margin-top: -150px;
         margin-left: -150px;
         background-color: #fff;
 
         /* CSS3 Stuff */
         /*-webkit-transform: rotate3d(0,1,1,30deg) scale3d(0.5,1,1);*/
-        border-radius: 150px; 
-
+        /*border-radius: 150px; */
+        /* -webkit-transform: perspective(800) translate3d(0px,0px,1000px) rotate3d(0,1,0,20deg); */
+    }
+    #target_0 {
+        /*-webkit-transform: perspective(800) translate3d(0px,0px,1000px) rotate3d(0,1,0,20deg);*/
+        /*-webkit-transform: perspective(800)  translate3d(0px,0px,1000px)  rotate3d(0,1,0,50deg);*/
     }
 </style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 <script type="text/javascript">
+    var TRANS_BASE = "perspective(900)";
+    $(document).ready(function(){
+        for(var i=0;i<10;i++){
+            var t=  "-webkit-transform: "+TRANS_BASE+" translate3d("+(i*80)+"px,0px,100px)"+
+                                " rotate3d(0,1,0,"+(i*8 + 50)+"deg);";
+            $("body").append('<div id="target_'+i+'" style="'+t+'" class="target"></div>');
+            console.log("-webkit-transform: "+t);
+            //$("#target_"+i).css("-webkit-transform",t);        
+            //console.log("target_"+i+" -webkit-transform: "+$("#target_"+i).css("-webkit-transform"));
+        }        
+    });     
 </script>
 </head>
 <body>
-    <div id="target"></div>
 </body>
 </html>
