@@ -1,9 +1,9 @@
 var camera, scene, renderer, geometry, material, core, light;
-var pulse, cubes, pulse_ival;
+
 
 init();
 animate();
-    
+ 
 function init() {
 
     camera = new THREE.Camera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -20,13 +20,22 @@ function init() {
     scene.addObject( core );
 
     // add some cubes 
+    var T=20;
+    var W=20;
+    var SPACER = 30;
+
     cubes = [];
-    for(var i=0;i<50;i++){
-        mesh = new THREE.Mesh( geometry, material );
-        mesh.position.x=i*40;
-        core.addChild(mesh);
-        cubes.push(mesh);
+    for(var i=0;i<T;i++){
+        for(var j=0;j<W;j++){
+            mesh = new THREE.Mesh( geometry, material );
+            mesh.position.x = (T/2 * SPACER)-(i * SPACER);
+            mesh.position.z = (T/2 * SPACER)- (j * SPACER);
+            mesh.position.y = Math.random()*200;
+            core.addChild(mesh);
+            cubes.push(mesh);
+        } 
     }
+
 
     light = new THREE.Light({ color: 0xff0000 });
     light.position.y = 75;
@@ -37,9 +46,11 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     
     document.body.appendChild( renderer.domElement );
+    /*
     document.body.onmouseup = function(){
         initPulse(); 
     }
+    */
     
 }
 

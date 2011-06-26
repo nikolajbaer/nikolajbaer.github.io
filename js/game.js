@@ -1,6 +1,10 @@
 /* Demo Base */
 /* util */
 
+// Game constants
+var bspd = 5; // 15 bullet speed
+var br = 3; // bullet radius 
+
 var G = 100;
 var max_grav_debug = 0;
 var TIMESTEP = 0.05;
@@ -41,9 +45,6 @@ function unitize(v){
 
 /* game class */
 
-// Game constants
-var bspd = 15; // bullet speed
-var br = 3; // bullet radius 
 
 Game=function(context,width,height,finished_callback){
     // Wise to hang onto these
@@ -136,7 +137,9 @@ Game.prototype.tick = function(){
     // update projectiles 
     for(var i=0;i<this.projectiles.length;i++){
         var p = this.projectiles[i];
-        this.dirtyrects.push([p.x-p.r,p.y-p.r,p.r*2,p.r*2]);
+        //this.dirtyrects.push([p.x-p.r,p.y-p.r,p.r*2,p.r*2]);
+        this.dirtyrects.push([p.x-p.r,p.y-p.r,p.r,p.r]);
+
         // acceleration from mass
         var g={x:p.dx,y:p.dy};
         if(max_grav_debug<10){
@@ -148,8 +151,8 @@ Game.prototype.tick = function(){
             }
             max_grav_debug++;
         }
-        p.x += g.x;
-        p.y += g.y;
+        p.x += g.x * 2;
+        p.y += g.y * 2;
         p.life++;
         // Check bounds first
         if(Math.abs(p.x)-p.r > this.width/2 || Math.abs(p.y)-p.r > this.height/2){
