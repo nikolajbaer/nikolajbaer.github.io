@@ -1,11 +1,32 @@
+/* 
+   grav three.js demo
+   author: Nikolaj Baer
+   Copyright 2011
+
+   many thanks to the three.js crew (http://github.com/mrdoob/three.js)
+
+*/
 var camera, scene, renderer, geometry, material, core, light, asteroid;
 
 var path,path_material,path_geometry;
 
 var sim=null;
 
+var logcache="";
+function log(txt){
+    d=document.getElementById("debug");
+    if(d!=null){
+        d.innerHTML += logcache?logcache:"" + txt+"\n";
+        logcache=null;
+        d.scrollTop = d.scrollHeight - d.style.height;
+    }else{
+        logcache += txt+"\n";
+    }
+}
 
 function init() {
+
+    log("initializing");
 
     camera = new THREE.Camera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
     camera.position.z = 1000;
@@ -29,10 +50,11 @@ function init() {
         var p ={x:(0.5-Math.random())*500,
                 y:(0.5-Math.random())*500,
                 z:(0.5-Math.random())*500,
-                m:Math.random()*1000};
+                m:500+Math.random()*500};
         mesh.position.x = p.x;
         mesh.position.z = p.y; 
         mesh.position.y = p.z;
+        mesh.scale = new THREE.Vector3(p.m/1000,p.m/1000,p.m/1000);
         planetoids.push(p);
         core.addChild(mesh);
     }
@@ -40,6 +62,7 @@ function init() {
     // TODO scale asteroid?
     mesh = new THREE.Mesh( geometry, gray  );
     asteroid = mesh;
+    asteroid.scale = new THREE.Vector3(0.5,0.5,0.5);
     core.addChild(mesh);
    
     // for Path, TODO Refactor
@@ -116,6 +139,7 @@ var Sim = function( ){
     state = { 
             planetoids:[],
             asteroid:{x:0,y:0,z:0,vx:0,vy:0,vz:0},
+            pull:{x:0,y:0,z:0}
     }
 
     this.is_active = function(){
@@ -136,7 +160,7 @@ var Sim = function( ){
 
     this.stop = function(){
         if(ival){
-            console.log("stopping at "+t);
+            log("stopping at "+t);
             clearInterval(ival);
         }
     }
@@ -150,7 +174,7 @@ var Sim = function( ){
         var a={x:0,y:0,z:0};
 
         // governor
-        if(dist({x:0,y:0,z:0},ast) > 1000){
+        if(t > 100){
             stop();
             return;
         }
@@ -162,20 +186,23 @@ var Sim = function( ){
             var d = dist(ast,p);
             // force to planet
             var f = p.m/Math.pow(d,2);
-            //console.log(p.m);
-            //console.log(f); 
+            //log(p.m);
+            //log(f); 
             // acceleration from ast to p
             u = {   x: ((p.x-ast.x)/d) * f,
                     y: ((p.y-ast.y)/d) * f,
                     z: ((p.z-ast.z)/d) * f
                 };
         
-            //console.log(u.x+","+u.y+","+u.z); 
+            log("t"+t+": u=("+u.x+","+u.y+","+u.z+")"); 
             a.x+=u.x;
             a.y+=u.y;
             a.z+=u.z;
         }
-    
+            
+        log("t"+t+": a=("+u.x+","+u.y+","+u.z+")"); 
+   
+        state.pull = a; 
         // apply acceleration vector to asteroid velocity
         ast.vx += a.x;
         ast.vy += a.y;
@@ -189,7 +216,7 @@ var Sim = function( ){
         // and tick our sim
         t++;
         
-        //console.log("updating position to "+state.asteroid.x+","+state.asteroid.y+","+state.asteroid.z);
+        //log("updating position to "+state.asteroid.x+","+state.asteroid.y+","+state.asteroid.z);
     
     }
     

@@ -8,11 +8,24 @@
             height: 100%;
             background-color: #000;
         }
+        #debug {
+            color: #fff;
+            font-size: 8pt;
+            position: absolute;
+            z-index: 1000;
+            top: 5px;
+            left: 5px;
+            width: 90%;
+            height: 90%; 
+            overflow: hidden;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
     <script type="text/javascript" src="js/Three.js"></script>
     <script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
     <script type="text/javascript" src="js/grav.js"></script>
+    <pre id="debug"></pre>
 </body>
 </html>
