@@ -8,17 +8,29 @@
             height: 100%;
             background-color: #000;
         }
-        #debug {
-            color: #fff;
+        .debug {
             font-size: 8pt;
             position: absolute;
             z-index: 1000;
+            direction: ltr;
+            opacity: 0.5;
+        }
+
+        #debug {
+            color: #fff;
+            top: 60px;
+            left: 5px;
+            width: 95%;
+            height: 50%; 
+            overflow: auto;
+        }
+
+        #stats {
+            color: #ff0;
             top: 5px;
             left: 5px;
-            width: 90%;
-            height: 90%; 
-            overflow: hidden;
-            opacity: 0.5;
+            width: 95%;
+            height: 50px;
         }
     </style>
 </head>
@@ -26,6 +38,7 @@
     <script type="text/javascript" src="js/Three.js"></script>
     <script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
     <script type="text/javascript" src="js/grav.js"></script>
-    <pre id="debug"></pre>
+    <pre id="debug" class="debug"></pre>
+    <pre id="stats" class="debug"></pre>
 </body>
 </html>
