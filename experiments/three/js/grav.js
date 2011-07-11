@@ -3,7 +3,7 @@
    author: Nikolaj Baer
    Copyright 2011
 
-   many thanks to the three.js crew (http://github.com/mrdoob/three.js)
+   powered by three.js (http://github.com/mrdoob/three.js)
 
 */
 var camera, scene, renderer, geometry, material, core, light, asteroid;
@@ -162,7 +162,7 @@ function render() {
     if(sim.is_active()){
         // Why can't i do damn lines! 
         var s = new THREE.Mesh(path_geometry,path_material);
-        s.position.x = asteroid.position.clone();
+        s.position = asteroid.position.clone();
         core.addChild(s);
 
         //adjust debug velocity vector
@@ -233,7 +233,7 @@ var Sim = function( ){
         var a=new THREE.Vector3(0,0,0);
 
         // governor
-        if(t > 100){
+        if(t >= 100){
             stop();
             return;
         }
