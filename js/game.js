@@ -137,8 +137,8 @@ Game.prototype.tick = function(){
     // update projectiles 
     for(var i=0;i<this.projectiles.length;i++){
         var p = this.projectiles[i];
-        //this.dirtyrects.push([p.x-p.r,p.y-p.r,p.r*2,p.r*2]);
-        this.dirtyrects.push([p.x-p.r,p.y-p.r,p.r,p.r]);
+        this.dirtyrects.push([p.x-p.r,p.y-p.r,p.r*2,p.r*2]);
+        //this.dirtyrects.push([p.x-p.r,p.y-p.r,p.r,p.r]);
 
         // acceleration from mass
         var g={x:p.dx,y:p.dy};
