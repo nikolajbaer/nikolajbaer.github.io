@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
   <ModulePrefs title="Preferences for __UP_myname__" height="400" 
+    directory_title="grahnix"
     description="grahnix"
     author="Nikolaj Baer"
     author_email="grahnx@gmail.com" 
