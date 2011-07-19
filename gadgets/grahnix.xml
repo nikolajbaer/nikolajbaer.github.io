@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
-  <ModulePrefs title="Preferences for __UP_myname__" height="400"/> 
+  <ModulePrefs title="Preferences for __UP_myname__" height="400" 
+    description="grahnix"
+    author="Nikolaj Baer"
+    author_email="grahnx@gmail.com" 
+    author_link="http://grahnix.com" 
+    scrolling="false"
+    category="funandgames" /> 
   <UserPref name="grah" display_name="Name" default_value="50"/>
    <Content type="html"><![CDATA[
    <div id="content_div"></div>
