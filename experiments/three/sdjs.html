@@ -1,0 +1,100 @@
+<html>
+<head>
+    <link rel="stylesheet" href="css/sdjs.css" />
+</head>
+<body>
+    <script type="text/javascript" src="js/Three.js"></script>
+    <script type="text/javascript" src="js/RequestAnimationFrame.js"></script>
+    <script type="text/javascript" src="js/sdjs.js"></script>
+
+        <div class="slide current">
+            <h2>THREE.js</h2>
+            <ul>
+                <li>By <a href="http://mrdoob.com">mrdoob</a></li> 
+                <li><i>"a lightweight 3D engine with a very low level of complexity &mdash; in other words, for dummies."</i></li> 
+                <li>Similar interface to Flash's <a href="http://blog.papervision3d.org/">Papervision 3D</a></li> 
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h2>Features</h2>
+            <ul>
+                <li>Multiple Rendering Engines</li> 
+                <li> - WebGL</li>
+                <li> - Canvas</li>
+                <li> - SVG</li>
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h2>Features</h2>
+            <ul>
+                <li>Lots of Simple Primitives</li> 
+                <li> - Camera</li>
+                <li> - Materials</li>
+                <li> - Geometries and Models</li>
+                <li> - Lights</li>
+                <li> - Scenes</li>
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h2>Features</h2>
+            <ul>
+                <li>Tons of Easy Goodies</li> 
+                <li> - Particle Engines</li>
+                <li> - Fonts</li>
+                <li> - HLSL Shaders</li>
+                <li> - Physics?</li>
+                <li> - Loaders for models</li>
+                <li> - Animations</li>
+            </ul>
+        </div>
+
+        <div class="slide">
+            <h2>Hello 3D World</h2>
+            <pre>
+                var camera,scene,cube_mesh;
+                init();
+                animate();
+
+                // init
+                function init(){
+                    //camera
+                    camera = new THREE.Camera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+                    camera.position.z = 250;
+                    camera.position.y = 100;
+                    //cube
+                    var cube_material = new THREE.MeshBasicMaterial( {color: 0xffe433 });
+                    var cube_geometry = new THREE.CubeGeometry( 100, 100, 100 );
+                    cube_mesh = new THREE.Mesh(cube_geometry,cube_material);
+                    // lights
+                    var light = new THREE.PointLight(0xffffff);
+                    light.position.y = 500;
+                    //scene
+                    scene = new THREE.Scene();
+                    scene.addLight(light);
+                    scene.addObject(cube_mesh);
+                    // renderer
+                    renderer = new THREE.CanvasRenderer();
+                    renderer.setSize( window.innerWidth, window.innerHeight );
+                    document.body.appendChild( renderer.domElement );
+                }
+                // animate loop
+                function animate() {
+                    requestAnimationFrame( animate );
+                    renderer.render( scene, camera );
+                    cube_mesh.rotation.y += 0.01;
+                }
+            </pre>
+        </div>
+
+        <div class="slide">
+            <iframe src="demo/1.html" width="800px" height="600px" border="none">
+            </iframe>
+        </div>
+
+    <pre id="debug" class="debug"></pre>
+    <pre id="stats" class="debug"></pre>
+</body>
+</html>
