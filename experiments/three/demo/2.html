@@ -4,21 +4,31 @@
             body {
                 background-color: #333;
             }
+            #target {
+                margin: auto;
+                width: 400px;
+                height: 400px;
+                -webkit-border-radius: 20px;
+                background-color: #444;
+            }
+            #target.right {
+                -webkit-transform: perspective(500px)  translate3d(0,0,-200px) rotateY(-45deg);
+                -webkit-transition: -webkit-transform 2s;
+            }
+            #target.left {
+                -webkit-transform: perspective(500px)  translate3d(0,0,-200px) rotateY(45deg);
+                -webkit-transition: -webkit-transform 2s;
+            }
         </style>
-    </head>
-    <body>
         <script type="text/javascript" src="../js/Three.js"></script>
         <script type="text/javascript" src="../js/RequestAnimationFrame.js"></script>
         <script type="text/javascript">
                 var camera,scene,cube_mesh;
-                init();
-                animate();
-
                 // init
                 function init(){
                     //camera
-                    var h=600; // irk why doesn't this init right
-                    var w=800;
+                    var h=400; // irk why doesn't this init right
+                    var w=400;
                     console.log("Assing width/height to be "+w+"x"+h);
                     camera = new THREE.Camera( 75, w/h , 1, 10000 );
                     camera.position.z = 250;
@@ -37,7 +47,7 @@
                     // renderer
                     renderer = new THREE.CanvasRenderer();
                     renderer.setSize( w,h );
-                    document.body.appendChild( renderer.domElement );
+                    document.getElementById("target").appendChild( renderer.domElement );
                 }
                 // animate loop
                 function animate() {
@@ -45,6 +55,23 @@
                     renderer.render( scene, camera );
                     cube_mesh.rotation.y += 0.01;
                 }
+                window.onload=function(){
+                    init();
+                    animate();
+                    document.getElementById("target").onmouseover = function(e){
+                        this.className="right";
+                        console.log("over")
+                    }
+                    document.getElementById("target").onmouseout = function(e){
+                        this.className="left";
+                        console.log("out")
+                    }
+                }
         </script>
+    </head>
+    <body>
+
+    <div id="target" class="right">
+    </div>
     </body>
 </html>
