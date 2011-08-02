@@ -45,9 +45,11 @@
         }
         .slide h2 {
             font-size: 32pt;
+            margin-left: 25px;
         }
         .slide li {
             margin-top: 20px;
+            margin-left: 50px;
         }
         .slide pre {
             font-size: 8pt;
@@ -60,4 +62,10 @@
             cursor: pointer;
         }
 
-
+        h1 {
+            text-align: center;
+            padding-bottom: 100px;
+        }
+        .note {
+            font-size: 10pt;
+        } 

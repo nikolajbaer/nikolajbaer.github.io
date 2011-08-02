@@ -1,0 +1,60 @@
+<html>
+    <head>
+        <style type="text/css"> 
+            body {
+                background-color: #333;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript" src="../js/Three.js"></script>
+        <script type="text/javascript" src="../js/RequestAnimationFrame.js"></script>
+        <script type="text/javascript">
+                var camera,scene,core,t;
+                init();
+                animate();
+
+                // init
+                function init(){
+                    t=0;
+                    //camera
+                    var w=800;
+                    var h=600; // irk why doesn't this init right
+                    core = new THREE.Object3D();
+                    camera = new THREE.Camera( 75, w/h , 1, 10000,core );
+                    camera.position.z = 250;
+                    camera.position.y = 100;
+                    // lights
+                    var light = new THREE.PointLight(0xffffff);
+                    light.position.y = 500;
+                    //scene
+                    scene = new THREE.Scene();
+                    scene.addLight(light);
+                    //cube
+                    var cubes=[];
+                    for(var i=0;i<50;i++){
+                        var cube_material = new THREE.MeshBasicMaterial( {color: 0xffe433 });
+                        var cube_geometry = new THREE.CubeGeometry( 10, 10, 10 );
+                        cube_mesh = new THREE.Mesh(cube_geometry,cube_material);
+                        cube_mesh.position = new THREE.Vector3(Math.random()*500-250,Math.random()*500-250,Math.random()*500-250);
+                        core.addChild(cube_mesh);
+                        cubes.push(cube_mesh);
+                    }
+                    scene.addChild(core);
+                    // set cam lookat
+                    camera.useTarget=true;
+                    // renderer
+                    renderer = new THREE.CanvasRenderer();
+                    renderer.setSize( w,h );
+                    document.body.appendChild( renderer.domElement );
+                }
+                // animate loop
+                function animate() {
+                    requestAnimationFrame( animate );
+                    renderer.render( scene, camera );
+                    core.position.z = Math.sin(t/1000)*2000;
+                    t++;
+                }
+        </script>
+    </body>
+</html>
