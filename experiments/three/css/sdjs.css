@@ -52,6 +52,9 @@
             margin-left: 50px;
         }
         .slide pre {
+            font-size: 12pt;
+        }
+        .slide pre.lots {
             font-size: 8pt;
         }
         .slide.current  {
