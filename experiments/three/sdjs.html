@@ -28,38 +28,38 @@
         <div class="slide">
             <h2>Hello 3D World</h2>
             <pre class="lots">
-                var camera,scene,cube_mesh;
-                init();
-                animate();
+        var camera,scene,cube_mesh;
+        init();
+        animate();
 
-                // init
-                function init(){
-                    //camera
-                    camera = new THREE.Camera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-                    camera.position.z = 250;
-                    camera.position.y = 100;
-                    //cube
-                    var cube_material = new THREE.MeshBasicMaterial( {color: 0xffe433 });
-                    var cube_geometry = new THREE.CubeGeometry( 100, 100, 100 );
-                    cube_mesh = new THREE.Mesh(cube_geometry,cube_material);
-                    // lights
-                    var light = new THREE.PointLight(0xffffff);
-                    light.position.y = 500;
-                    //scene
-                    scene = new THREE.Scene();
-                    scene.addLight(light);
-                    scene.addObject(cube_mesh);
-                    // renderer
-                    renderer = new THREE.CanvasRenderer();
-                    renderer.setSize( window.innerWidth, window.innerHeight );
-                    document.body.appendChild( renderer.domElement );
-                }
-                // animate loop
-                function animate() {
-                    requestAnimationFrame( animate );
-                    renderer.render( scene, camera );
-                    cube_mesh.rotation.y += 0.01;
-                }
+        // init
+        function init(){
+            //camera
+            camera = new THREE.Camera( 75, width / height, 1, 10000 );
+            camera.position.z = 250;
+            camera.position.y = 100;
+            //cube
+            var cube_material = new THREE.MeshBasicMaterial( {color: 0xffe433 });
+            var cube_geometry = new THREE.CubeGeometry( 100, 100, 100 );
+            cube_mesh = new THREE.Mesh(cube_geometry,cube_material);
+            // lights
+            var light = new THREE.PointLight(0xffffff);
+            light.position.y = 500;
+            //scene
+            scene = new THREE.Scene();
+            scene.addLight(light);
+            scene.addObject(cube_mesh);
+            // renderer
+            renderer = new THREE.CanvasRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+        }
+        // animate loop
+        function animate() {
+            requestAnimationFrame( animate );
+            renderer.render( scene, camera );
+            cube_mesh.rotation.y += 0.01;
+        }
             </pre>
         </div>
 
@@ -81,15 +81,15 @@
         <div class="slide">
             <h2>Rendering Engines</h2>
             <pre>
-                // Choose your renderer (or do it intelligently) 
-                renderer = new THREE.CanvasRenderer();
-                // OR
-                renderer = new THREE.WebGLRenderer();
-                // OR
-                renderer = new THREE.SVGRenderer(); 
-                // then set the size and add the element created
-                renderer.setSize( window.innerWidth, window.innerHeight );
-                document.body.appendChild( renderer.domElement );
+        // Choose your renderer (or do it intelligently) 
+        renderer = new THREE.CanvasRenderer();
+        // OR
+        renderer = new THREE.WebGLRenderer();
+        // OR
+        renderer = new THREE.SVGRenderer(); 
+        // then set the size and add the element created
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
 
             </pre>
         </div>
@@ -109,14 +109,14 @@
         <div class="slide">
             <h2>Easy to use Camera</h2>
             <pre>
-                // create with your FOV, aspect ratio, near and far culling 
-                camera = new THREE.Camera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-                // move it around..
-                camera.position.z = 250;
-                camera.position.y = 100;
-                // Or tell it to look at a target 
-                camera.target = myCube.position;
-                camera.useTarget = true;
+        // create with your FOV, aspect ratio, near and far culling 
+        camera = new THREE.Camera( 75, width / height, 1, 10000 );
+        // move it around..
+        camera.position.z = 250;
+        camera.position.y = 100;
+        // Or tell it to look at a target 
+        camera.target = myCube.position;
+        camera.useTarget = true;
             </pre>
         </div>
 
@@ -161,12 +161,26 @@
             </ul>
         </div>
 
-
         <div class="slide">
             <iframe scrolling="no" src="demo/2.html" width="800px" height="600px" frameborder="0">
             </iframe>
         </div>
 
+        <div class="slide">
+            <h2>Additional Niceness</h2>
+            <pre>
+                container = new THREE.Object3D();
+                for(var i=0;i<100;i++){
+                    var cube_mesh = new THREE.Mesh(cube_geometry,cube_material);
+                    container.addChild(cube_mesh);
+                }
+                scene.addChild(container);
+                // ... 
+                function render(){
+                    container.rotation.Y += 0.1; // rotate all cubes!
+                } 
+            </pre>
+        </div> 
 
         <!--
         <div class="slide">
