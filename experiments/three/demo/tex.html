@@ -10,7 +10,7 @@
         <script type="text/javascript" src="../js/Three.js"></script>
         <script type="text/javascript" src="../js/RequestAnimationFrame.js"></script>
         <script type="text/javascript">
-                var camera,scene,cube_mesh;
+                var camera,scene,cube_mesh,cube_mesh2;
                 init();
                 animate();
 
@@ -27,10 +27,19 @@
                     image = document.createElement( 'img' );
                     image.src="tex.png";
                     var texture = new THREE.Texture(image);
+                    image2 = document.createElement( 'img' );
+                    image2.src="tex2.png";
+                    var texture2 = new THREE.Texture(image2);
                     //cube
                     var material = new THREE.MeshBasicMaterial( { map: texture } );
+                    var material2 = new THREE.MeshBasicMaterial( { map: texture2 } );
                     var cube_geometry = new THREE.CubeGeometry( 100, 100, 100 );
                     cube_mesh = new THREE.Mesh(cube_geometry,material);
+                    cube_mesh2 = new THREE.Mesh(cube_geometry,material2);
+                    
+                    cube_mesh.position.x = 100;
+                    cube_mesh2.position.x = -100;
+
                     // lights
                     var light = new THREE.PointLight(0xffffff);
                     light.position.y = 500;
@@ -38,6 +47,7 @@
                     scene = new THREE.Scene();
                     scene.addLight(light);
                     scene.addObject(cube_mesh);
+                    scene.addObject(cube_mesh2);
                     // renderer
                     renderer = new THREE.CanvasRenderer();
                     renderer.setSize( w,h );
@@ -48,6 +58,7 @@
                     requestAnimationFrame( animate );
                     renderer.render( scene, camera );
                     cube_mesh.rotation.y += 0.01;
+                    cube_mesh2.rotation.y -= 0.01;
                 }
         </script>
     </body>
