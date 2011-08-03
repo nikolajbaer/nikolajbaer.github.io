@@ -10,14 +10,11 @@
                 height: 400px;
                 -webkit-border-radius: 20px;
                 background-color: #444;
-            }
-            #target.right {
-                -webkit-transform: perspective(500px)  translate3d(0,0,-200px) rotateY(-45deg);
                 -webkit-transition: -webkit-transform 2s;
-            }
-            #target.left {
                 -webkit-transform: perspective(500px)  translate3d(0,0,-200px) rotateY(45deg);
-                -webkit-transition: -webkit-transform 2s;
+            }
+            #target:hover {
+                -webkit-transform: perspective(500px)  translate3d(0,0,-200px) rotateY(-45deg);
             }
         </style>
         <script type="text/javascript" src="../js/Three.js"></script>
@@ -34,7 +31,7 @@
                     camera.position.z = 250;
                     camera.position.y = 100;
                     //cube
-                    var cube_material = new THREE.MeshBasicMaterial( {color: 0xffe433 });
+                    var cube_material = new THREE.MeshBasicMaterial( {color: 0xff00ff });
                     var cube_geometry = new THREE.CubeGeometry( 100, 100, 100 );
                     cube_mesh = new THREE.Mesh(cube_geometry,cube_material);
                     // lights
