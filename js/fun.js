@@ -23,6 +23,15 @@ function init(){
     if( demo.onmouseup ){
         $("#thecanvas").mouseup(function(e){ demo.onmouseup(e); });
     }
+    if( demo.touchstart ){
+        $("#thecanvas").bind('touchstart',function(e){ demo.touchstart(e) });
+    }
+    if( demo.touchend ){
+        $("body").bind('touchend',function(e){ demo.touchend(e) });
+    }
+    if( demo.touchmove ){
+        $("#thecanvas").bind('touchmove',function(e){ demo.touchmove(e) });
+    }
 }
 
 function call_tick(){

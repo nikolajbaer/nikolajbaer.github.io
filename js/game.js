@@ -5,7 +5,7 @@
 var bspd = 5; // 15 bullet speed
 var br = 3; // bullet radius 
 
-var G = 100;
+var G = 1.0;
 var max_grav_debug = 0;
 var TIMESTEP = 0.05;
 // TODO Tune gravity
@@ -161,7 +161,7 @@ Game.prototype.tick = function(){
             this.projectiles.splice(i,1);
         }
 
-        // check collissions
+        // check collisions
         for(var j=0;j<this.targets.length;j++){
             if(this.targets[j].strength <= 0){ continue; }
             var d = distanceBetween(p,this.targets[j])
@@ -228,6 +228,21 @@ Game.prototype.onmousemove = function(e){
     this.my = e.clientY;
 }
 
+Game.prototype.touchstart = function(e){
+    this.mx = e.originalEvent.touches[0].clientX;
+    this.my = e.originalEvent.touches[0].clientY;
+    this.onmousedown();
+}
+
+Game.prototype.touchend = function(e){ 
+    this.mdown = false;
+}
+
+Game.prototype.touchmove = function(e){
+    this.mx = e.originalEvent.touches[0].clientX;
+    this.my = e.originalEvent.touches[0].clientY;
+}
+
 Game.prototype.onmousedown = function(e){
     this.mdown = true;
 }
@@ -251,7 +266,7 @@ Game.prototype.draw = function(){
 
     
     // draw gravity flow vectors
-    this.drawTellTales(21);
+    //this.drawTellTales(21);
    
     // draw all projectiles
     this.drawProjectiles();
