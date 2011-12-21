@@ -266,7 +266,7 @@ Game.prototype.draw = function(){
 
     
     // draw gravity flow vectors
-    //this.drawTellTales(21);
+    this.drawTellTales(21);
    
     // draw all projectiles
     this.drawProjectiles();
