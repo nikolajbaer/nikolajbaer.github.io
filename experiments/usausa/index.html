@@ -2,10 +2,91 @@
 <head>
     <title>USA USA USA</title>
     <style type="text/css">
-
+        body {
+            width: 100%;
+            height: 100%;
+            padding: 0px;
+            margin: 0px;
+            background-color: #000;
+        }
+        .player {
+            /* border: 1px solid red; */
+            float: left;
+            clear: none;
+            display: inline;
+        }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        //Load player api asynchronously.
+        var tag = document.createElement('script');
+        tag.src = "http://www.youtube.com/player_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        var done = false;
+
+        vid_grid = {
+                        videos:[
+                            {id:"laScz5WNViA",delay:0,volume:100},
+                            {id:"OHHDuETZYEc",delay:0,volume:0},
+                            {id:"oa-q-ztyZZw",delay:0,volume:50},
+                            {id:"eGiYEWRzTik",delay:10,volume:50}
+                        ],
+                        grid:{w:2,h:2},
+                    };
+
+        function onYouTubePlayerAPIReady() {
+            var body = document.getElementsByTagName("body")[0];
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+
+            //TODO create divs for grid
+            for(var i=0;i<vid_grid.videos.length;i++){
+                $("body").append('<div id="player'+i+'" class="player"></div>');
+                vid_grid.videos[i].width = w/vid_grid.grid.w;
+                vid_grid.videos[i].height = h/vid_grid.grid.h;
+            }
+
+            for(var i=0;i<vid_grid.videos.length;i++){
+                var player = new YT.Player('player'+i, {
+                  width: vid_grid.videos[i].width,
+                  height: vid_grid.videos[i].height,
+                  videoId: vid_grid.videos[i].id, 
+                  playerVars: {'autoplay':vid_grid.videos[i].delay > 0?1:0,'controls':0},
+                  events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                  }
+                });
+                vid_grid.videos[i].player = player;
+                player.delay = vid_grid.videos[i].delay;
+                player.volume = vid_grid.videos[i].volume;
+                // mix delay into userdata.. and setTimeout on playVideo
+            }
+        }
+
+        function onPlayerReady(evt) {
+            evt.target.setVolume(evt.target.volume);
+            if(evt.target.delay > 0){
+                setTimeout(evt.target.playVideo, evt.target.delay * 1000);
+            }else{
+                evt.target.playVideo();
+            }
+        }
+
+        function onPlayerStateChange(evt) {
+            if (evt.data == YT.PlayerState.PLAYING && !done) {
+                //setTimeout(stopVideo, 6000);
+                //done = true;
+            }
+        }
+
+        function stopVideo() {
+            //player.stopVideo();
+        }
+
+    </script>
 </head>
 <body>
-    <!-- http://www.youtube.com/watch?v=laScz5WNViA http://www.youtube.com/watch?v=oa-q-ztyZZw -->
 </body>
 </html>
