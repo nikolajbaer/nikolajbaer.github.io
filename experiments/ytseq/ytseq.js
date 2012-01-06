@@ -3,7 +3,7 @@
 //   {name:"cymbal",ytid:"mslT361M6-E",start:0,end:5},
 //    {name:"guitar",ytid:"ICLkuwWO9tU",start:0,end:1},
 
-var Sequencer = function(steps,sequences,tracks,bpm){
+var Sequencer = function(steps,tracks,bpm){
     this.steps = steps;
     this.tracks = [];
     this.sequences = [];
@@ -17,6 +17,7 @@ var Sequencer = function(steps,sequences,tracks,bpm){
     };
 
     this.tick = function(){
+        console.log(this);
         var seq = this.sequences[this.current_sequence];
         for(var i=0;i<seq.length; i++){ // for each track in the sequencej
             if(seq[i][this.current_step]){ // if true, then play the sample
@@ -51,21 +52,8 @@ var Sequencer = function(steps,sequences,tracks,bpm){
         this.current_step = 0;
     }   
 
-    this.onPlayerReady = function(e){
-        //evt.target.setVolume(evt.target.volume);
-    }
-
-    this.onPlayerStateChange = function(e){
-        if (evt.data == YT.PlayerState.PLAYING && !done) {
-        //setTimeout(stopVideo, 6000);
-        //done = true;
-        }
-    }
-
-   
-
-    this.build_sequences = function(randomize){
-        for(var i=0;i<sequences;i++){
+    this.build_sequences = function(n,randomize){
+        for(var i=0;i<n;i++){
             var sequence = [];
             for(var j=0;j<this.tracks.length;j++){
                 var s = [];
@@ -93,18 +81,13 @@ function onYouTubePlayerAPIReady() {
                   width: 200,
                   height: 200,
                   videoId: tracks[i].ytid, 
-                  playerVars: {'autoplay':false,'controls':0},
-                  events: {
-                    'onReady': sequencer.onPlayerReady,
-                    'onStateChange': sequencer.onPlayerStateChange
-                  }
-                });
+                  playerVars: {'autoplay':false,'controls':0}
+        });
         sequencer.add_track(tracks[i].name,player,tracks[i].start,tracks[i].end);
         // TODO create the Google iFrame player for each, and stick in #tubes
     }    
-    sequencer.build_sequences(true); 
-    sequencer.play();
-    sequencer.play();
+    sequencer.build_sequences(4,true); 
+    //sequencer.play();
 }
 
 
