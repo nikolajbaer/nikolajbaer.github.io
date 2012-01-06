@@ -18,6 +18,8 @@ var Sequencer = function(steps,tracks,bpm){
 
     this.tick = function(){
         console.log(this);
+        console.log(this.sequences);
+
         var seq = this.sequences[this.current_sequence];
         for(var i=0;i<seq.length; i++){ // for each track in the sequencej
             if(seq[i][this.current_step]){ // if true, then play the sample
@@ -29,7 +31,7 @@ var Sequencer = function(steps,tracks,bpm){
                 }
                 t.player.seekTo(t.start);
                 t.player.playVideo(); // TODO make this play the yt player
-                t.ival = setTimeout(t.pauseVideo,t.end - t.start);
+                t.ival = setTimeout(function(){ t.pauseVideo },t.end - t.start);
             }
         }
         this.current_step = (this.current_step + 1)%this.steps;
@@ -37,7 +39,7 @@ var Sequencer = function(steps,tracks,bpm){
    
     this.play = function(){
         if(this.ival){ return; }
-        this.ival = setInterval(this.tick,60000/this.bpm);
+        this.ival = setInterval(function(){ this.tick },60000/this.bpm);
     }
 
     this.pause = function(){
