@@ -11,14 +11,14 @@ var Sequencer = function(steps,tracks,bpm){
     this.ival = null;
     this.current_step = 0;
     this.current_sequence = 0;
+    var self = this;
 
     this.add_track = function(name, player, start, end){
         this.tracks.push({name:name,player:player,start:start,end:end,ival:null});
     };
 
     this.tick = function(){
-        console.log(this);
-        console.log(this.sequences);
+        console.log("beat "+this.current_step+"/"+this.steps);
 
         var seq = this.sequences[this.current_sequence];
         for(var i=0;i<seq.length; i++){ // for each track in the sequencej
@@ -29,17 +29,19 @@ var Sequencer = function(steps,tracks,bpm){
                     clearInterval(t.ival);
                     t.ival=null;
                 }
-                t.player.seekTo(t.start);
+                console.log(t.player);
+                //t.player.seekTo(t.start,false);
                 t.player.playVideo(); // TODO make this play the yt player
-                t.ival = setTimeout(function(){ t.pauseVideo },t.end - t.start);
+                t.ival = setTimeout(function(){ t.pauseVideo(); },t.end - t.start);
             }
         }
         this.current_step = (this.current_step + 1)%this.steps;
     };
    
     this.play = function(){
-        if(this.ival){ return; }
-        this.ival = setInterval(function(){ this.tick },60000/this.bpm);
+        if(this.ival != null){ return; }
+        console.log("playing at "+(60000/this.bpm)+"ms per interval");
+        this.ival = setInterval(function(){ self.tick(); },60000/this.bpm);
     }
 
     this.pause = function(){
@@ -72,7 +74,7 @@ var Sequencer = function(steps,tracks,bpm){
 var sequencer = null;
 
 function onYouTubePlayerAPIReady() {
-    sequencer = new Sequencer(16,4);
+    sequencer = new Sequencer(16,4,100);
     var tracks = [{name:"cymbal",ytid:"mslT361M6-E",start:0,end:5},
                   {name:"guitar",ytid:"ICLkuwWO9tU",start:0,end:1},]
 
@@ -80,13 +82,12 @@ function onYouTubePlayerAPIReady() {
     for(var i=0;i<tracks.length;i++){
         $("#tubes").append('<div id="track_'+i+'"></div>');
         var player = new YT.Player('track_'+i, {
-                  width: 200,
-                  height: 200,
+                  width: 50,
+                  height: 50,
                   videoId: tracks[i].ytid, 
                   playerVars: {'autoplay':false,'controls':0}
         });
         sequencer.add_track(tracks[i].name,player,tracks[i].start,tracks[i].end);
-        // TODO create the Google iFrame player for each, and stick in #tubes
     }    
     sequencer.build_sequences(4,true); 
     //sequencer.play();
