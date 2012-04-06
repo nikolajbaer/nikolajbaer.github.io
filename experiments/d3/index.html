@@ -3,12 +3,16 @@
 <link type="text/css" href="style.css" rel="stylesheet" />
 <script type="text/javascript" src="d3.v2.js"></script>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-<script type="https://spreadsheets.google.com/feeds/list/0Akgd2WiouvmpdFRvZEJsamNUMDVITU9RRjVzNlVYcHc/od6/public/basic?alt=json-in-script"></script>
 <script type="text/javascript">
     // todo: something interesting
+    function data_loaded(d){
+        console.log("yay!");
+        console.log(d);
+    }
 </script>
 </head>
 <body>
     <div>testing..</div>
+<script type="https://spreadsheets.google.com/feeds/list/0Akgd2WiouvmpdFRvZEJsamNUMDVITU9RRjVzNlVYcHc/od6/public/basic?alt=json-in-script&callback=data_loaded"></script>
 </body>
 </html>
