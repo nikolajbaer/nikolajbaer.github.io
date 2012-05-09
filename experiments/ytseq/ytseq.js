@@ -95,8 +95,9 @@ function onYouTubePlayerAPIReady() {
     sequencer.build_sequences(4,true); 
     //sequencer.play();
 
-    document.getElementById("play").addEventListener("click",function(){ sequencer.play(); });
-    document.getElementById("pause").addEventListener("click",function(){ sequencer.pause(); });
+    $("#play").click(function(){ sequencer.play(); });
+    $("#pause").click(function(){ sequencer.pause(); });
+
 }
 
 
