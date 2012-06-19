@@ -1,0 +1,13 @@
+<html>
+<body>
+<script type="text/javascript">
+    var i=0;
+    function sad(){
+        document.getElementsByTagName("body")[0].innerHTML += "<p>all html and no css makes nikolaj a sad man.</p>";
+        i++;
+        setTimeout(sad,5000/i+100);
+    }
+    setTimeout(sad,5000);
+</script>
+</body>
+</html>
