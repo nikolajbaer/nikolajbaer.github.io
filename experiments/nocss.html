@@ -2,12 +2,26 @@
 <body>
 <script type="text/javascript">
     var i=0;
-    function sad(){
-        document.getElementsByTagName("body")[0].innerHTML += "<p>all html and no css makes nikolaj a sad man.</p>";
-        i++;
-        setTimeout(sad,5000/i+100);
+    var curstr=null;
+    var curchar=0;
+
+    function typeit(){
+        document.getElementsByTagName("body")[0].innerHTML += curstr.charAt(curchar);
+        curchar+=1;
+        if(curstr != null && curchar<curstr.length){
+            setTimeout(typeit,Math.random()*80);
+        }else{
+            curchar=0; curstr=null;
+            setTimeout(sad,5000/i+100);
+            document.getElementsByTagName("body")[0].innerHTML += "<br/>";
+        }
     }
-    setTimeout(sad,5000);
+    function sad(){
+        curstr = "all 500s and no 200s makes nikolaj a sad man.\n";
+        typeit();
+        i++;
+    }
+    sad();
 </script>
 </body>
 </html>
