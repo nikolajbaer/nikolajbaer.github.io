@@ -1,0 +1,64 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        $(".pig").click(function(){
+            $("audio",this).play();
+        }); 
+    });
+    </script>
+    <style type="text/css">
+        div {
+            position: absolute;
+        }
+        body { 
+            background-image: url('farm.jpg');
+            background-size: cover; 
+            position: relative;
+        } 
+        #heinz {
+            background-image: url('heinz.png');
+            width: 208px;
+            height: 248px;
+        }
+        #curt {
+            /*background-image: url('curt.png'); */
+
+        }
+        #tractor {
+            background-image: url('massey.png');
+            width: 1024px;
+            height: 691px;
+        }
+        .pig {
+            background-image: url('pig.png');
+            width: 294px;
+            height: 288px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="heinz"></div>
+    <div id="tractor"></div>
+    <div id="curt"></div>
+
+    <div class="pig" id="pig0">
+        <audio><source src="pig0.mp3" type="audio/mp3" /></audio>
+    </div>
+    <div class="pig" id="pig1">
+        <audio><source src="pig1.mp3" type="audio/mp3" /></audio>
+    </div>
+    <div class="pig" id="pig2">
+        <audio><source src="pig2.mp3" type="audio/mp3" /></audio>
+    </div>
+    <div class="pig" id="pig3">
+        <audio><source src="pig3.mp3" type="audio/mp3" /></audio>
+    </div>
+    <div class="pig" id="pig4">
+        <audio><source src="pig4.mp3" type="audio/mp3" /></audio>
+    </div>
+
+</body>
+</html>
