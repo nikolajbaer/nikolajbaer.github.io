@@ -32,7 +32,7 @@ var Sequencer = function(steps,tracks,bpm){
                 console.log(t.player);
                 //t.player.seekTo(t.start,false);
                 t.player.playVideo(); // TODO make this play the yt player
-                t.ival = setTimeout(function(){ t.pauseVideo(); },t.end - t.start);
+                t.ival = setTimeout(function(){ t.player.pauseVideo(); },t.end - t.start);
             }
         }
         this.current_step = (this.current_step + 1)%this.steps;
@@ -75,7 +75,7 @@ var sequencer = null;
 
 function onYouTubePlayerAPIReady() {
     sequencer = new Sequencer(16,4,100);
-    var tracks = [{name:"cymbal",ytid:"mslT361M6-E",start:0,end:5},
+    var tracks = [{name:"cymbal",ytid:"wF9Me35vQ20",start:0,end:5},
                   {name:"guitar",ytid:"ICLkuwWO9tU",start:0,end:1},]
 
     // Build samples
