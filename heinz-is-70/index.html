@@ -1,0 +1,76 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Kranky' rel='stylesheet' type='text/css'>
+    <script type="text/javascript">
+    $(document).ready(function(){
+        $(".pig").click(function(){
+            $("audio",this).play();
+        }); 
+    });
+    </script>
+    <style type="text/css">
+        h1 { 
+            text-align: center;
+            font-size: 32pt;
+        }
+        p {
+            text-align: center;
+       }
+        div {
+            position: absolute;
+        }
+        body { 
+            font-family: 'Kranky', cursive;
+            background-image: url('farm.jpg');
+            background-size: cover; 
+            background-position: bottom;
+            position: relative;
+        } 
+        #heinz {
+            position: absolute;
+            bottom: 330px;
+            left: 170px;
+        }
+        #curt {
+        }
+        #tractor {
+            position: absolute;
+            bottom: 0px;
+        }
+        #pigs {
+            bottom: 0px;
+            right: 0px;
+        }
+        .pig {
+            float: bottom;
+            bottom: 0px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <img id="tractor" src="massey.png" />
+    <img id="heinz" src="heinz.png" />
+    <div id="curt"></div>
+
+    <div id="pigs">
+        <img class="pig" id="pig5" src="pig.png" width="105px" />
+        <audio><source src="pig5.mp3" type="audio/mp3"  /></audio>
+        <img class="pig" id="pig4" src="pig.png" width="115px"  />
+        <audio><source src="pig3.mp3" type="audio/mp3"  /></audio>
+        <img class="pig" id="pig3" src="pig.png" width="120px" />
+        <audio><source src="pig3.mp3" type="audio/mp3"  /></audio>
+        <img class="pig" id="pig2" src="pig.png" width="135px"  />
+        <audio><source src="pig2.mp3" type="audio/mp3" /></audio>
+        <img class="pig" id="pig1" src="pig.png" width="140px" />
+        <audio><source src="pig1.mp3" type="audio/mp3"  /></audio>
+        <img class="pig" id="pig0" src="pig.png" width="150px" />
+        <audio><source src="pig0.mp3" type="audio/mp3" /></audio>
+        <img class="pig" id="curt" src="curt.png" width="180px" />
+        <audio><source src="pig0.mp3" type="audio/mp3" /></audio>
+    </div>
+    <h1>Happy 70th Birthday Heinz</h1>
+    <p>Continue on to <a href="http://www.loversleapfarm.com/">your birthday present</a>!</p>
+</body>
+</html>

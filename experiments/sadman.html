@@ -1,0 +1,27 @@
+<html>
+<body>
+<script type="text/javascript">
+    var i=0;
+    var curstr=null;
+    var curchar=0;
+
+    function typeit(){
+        document.getElementsByTagName("body")[0].innerHTML += curstr.charAt(curchar);
+        curchar+=1;
+        if(curstr != null && curchar<curstr.length){
+            setTimeout(typeit,Math.random()*80);
+        }else{
+            curchar=0; curstr=null;
+            setTimeout(sad,3000/i+50);
+            document.getElementsByTagName("body")[0].innerHTML += "<br/>";
+        }
+    }
+    function sad(){
+        curstr = "all html and no Java Scripts makes nikolaj a sad QA monkey.\n";
+        typeit();
+        i++;
+    }
+    sad();
+</script>
+</body>
+</html>

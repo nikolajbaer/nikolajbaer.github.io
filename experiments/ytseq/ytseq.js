@@ -30,7 +30,7 @@ var Sequencer = function(steps,tracks,bpm){
                     t.ival=null;
                 }
                 console.log(t.player);
-                //t.player.seekTo(t.start,false);
+                t.player.seekTo(t.start,false);
                 t.player.playVideo(); // TODO make this play the yt player
                 t.ival = setTimeout(function(){ t.player.pauseVideo(); },t.end - t.start);
             }
@@ -45,7 +45,7 @@ var Sequencer = function(steps,tracks,bpm){
     }
 
     this.pause = function(){
-        if(this.ival){ 
+        if(this.ival != null){ 
             clearInterval(this.ival);
             this.ival = null;
         }
@@ -61,7 +61,7 @@ var Sequencer = function(steps,tracks,bpm){
             var sequence = [];
             for(var j=0;j<this.tracks.length;j++){
                 var s = [];
-                for(var j=0;j<steps;j++){
+                for(var k=0;k<steps;k++){
                     s.push(randomize?Math.random()>0.5:false);
                 }
                 sequence.push(s);
@@ -74,16 +74,25 @@ var Sequencer = function(steps,tracks,bpm){
 var sequencer = null;
 
 function onYouTubePlayerAPIReady() {
+<<<<<<< HEAD
     sequencer = new Sequencer(16,4,100);
     var tracks = [{name:"cymbal",ytid:"wF9Me35vQ20",start:0,end:5},
                   {name:"guitar",ytid:"ICLkuwWO9tU",start:0,end:1},]
+=======
+    sequencer = new Sequencer(8,2,60);
+    var tracks = [{name:"cymbal",ytid:"mv4kBI15cEk",start:44,end:46},
+                  {name:"guitar",ytid:"ICLkuwWO9tU",start:2,end:4},]
+
+    var h = window.height;
+    var w = window.width;
+>>>>>>> 1173f5a6f80e92969bfb34cc6be3ebb9646c7e44
 
     // Build samples
     for(var i=0;i<tracks.length;i++){
         $("#tubes").append('<div id="track_'+i+'"></div>');
         var player = new YT.Player('track_'+i, {
-                  width: 50,
-                  height: 50,
+                  width: w/tracks.length,
+                  height: 0.75*w,
                   videoId: tracks[i].ytid, 
                   playerVars: {'autoplay':false,'controls':0}
         });
@@ -91,6 +100,10 @@ function onYouTubePlayerAPIReady() {
     }    
     sequencer.build_sequences(4,true); 
     //sequencer.play();
+
+    $("#play").click(function(){ sequencer.play(); });
+    $("#pause").click(function(){ sequencer.pause(); });
+
 }
 
 
