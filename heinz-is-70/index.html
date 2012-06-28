@@ -1,6 +1,7 @@
 <html>
 <head>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Kranky' rel='stylesheet' type='text/css'>
     <script type="text/javascript">
     $(document).ready(function(){
         $(".pig").click(function(){
@@ -9,55 +10,67 @@
     });
     </script>
     <style type="text/css">
+        h1 { 
+            text-align: center;
+            font-size: 32pt;
+        }
+        p {
+            text-align: center;
+        }
         div {
             position: absolute;
         }
         body { 
+            font-family: 'Kranky', cursive;
             background-image: url('farm.jpg');
             background-size: cover; 
+            background-position: bottom;
             position: relative;
         } 
         #heinz {
-            background-image: url('heinz.png');
-            width: 208px;
-            height: 248px;
+            position: absolute;
+            bottom: 290px;
+            left: 220px;
         }
         #curt {
-            background-image: url('curt.png');
         }
         #tractor {
-            background-image: url('massey.png');
-            width: 1024px;
-            height: 691px;
+            position: absolute;
+            bottom: -65px;
+        }
+        #pigs {
+            bottom: 0px;
+            right: 0px;
         }
         .pig {
-            background-image: url('pig.png');
-            width: 294px;
-            height: 288px;
+            float: bottom;
+            bottom: 0px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-
-    <div id="heinz"></div>
-    <div id="tractor"></div>
+    <h1>Happy 70th Birthday Heinz</h1>
+    <p>Continue on to <a href="http://www.loversleapfarm.com/">your birthday present</a>!</p>
+    <img id="tractor" src="massey.png" />
+    <img id="heinz" src="heinz.png" />
     <div id="curt"></div>
 
-    <div class="pig" id="pig0">
+    <div id="pigs">
+        <img class="pig" id="pig5" src="pig.png" width="105px" />
+        <audio><source src="pig5.mp3" type="audio/mp3"  /></audio>
+        <img class="pig" id="pig4" src="pig.png" width="115px"  />
+        <audio><source src="pig3.mp3" type="audio/mp3"  /></audio>
+        <img class="pig" id="pig3" src="pig.png" width="120px" />
+        <audio><source src="pig3.mp3" type="audio/mp3"  /></audio>
+        <img class="pig" id="pig2" src="pig.png" width="135px"  />
+        <audio><source src="pig2.mp3" type="audio/mp3" /></audio>
+        <img class="pig" id="pig1" src="pig.png" width="140px" />
+        <audio><source src="pig1.mp3" type="audio/mp3"  /></audio>
+        <img class="pig" id="pig0" src="pig.png" width="150px" />
+        <audio><source src="pig0.mp3" type="audio/mp3" /></audio>
+        <img class="pig" id="curt" src="curt.png" width="180px" />
         <audio><source src="pig0.mp3" type="audio/mp3" /></audio>
     </div>
-    <div class="pig" id="pig1">
-        <audio><source src="pig1.mp3" type="audio/mp3" /></audio>
-    </div>
-    <div class="pig" id="pig2">
-        <audio><source src="pig2.mp3" type="audio/mp3" /></audio>
-    </div>
-    <div class="pig" id="pig3">
-        <audio><source src="pig3.mp3" type="audio/mp3" /></audio>
-    </div>
-    <div class="pig" id="pig4">
-        <audio><source src="pig4.mp3" type="audio/mp3" /></audio>
-    </div>
-
 </body>
 </html>
