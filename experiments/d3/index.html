@@ -7,10 +7,10 @@
 <script type="text/javascript">
     // todo: something interesting
     function data_loaded(d){
-        var surf_low = d.feed.entry[8];
-        var surf_high = d.feed.entry[11];
-        var water_low = d.feed.entry[9];
-        var water_high = d.feed.entry[12];
+        var surf_low = d.feed.entry[8].content.$t;
+        var surf_high = d.feed.entry[11].content.$t;
+        var water_low = d.feed.entry[9].content.$t;
+        var water_high = d.feed.entry[12].content.$t;
         $("div").html("San Diego Surf height for tomorrow is "+surf_low+" to "+surf_high+" Feet, with water temperature between "+water_low+" and "+water_high+" degrees Fahrenheit");
         console.log(d);
     }
