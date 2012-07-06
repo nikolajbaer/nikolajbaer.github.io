@@ -7,3 +7,6 @@ body {
     color: #eee;
     font-family: sans-serif;
 }
+div {
+    margin: 50px auto;
+}
