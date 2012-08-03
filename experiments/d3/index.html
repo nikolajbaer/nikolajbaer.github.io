@@ -1,18 +1,23 @@
 <html>
 <head>
 <link type="text/css" href="style.css" rel="stylesheet" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript" src="d3.v2.js"></script>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
 <script type="text/javascript">
     // todo: something interesting
     function data_loaded(d){
-        console.log("yay!");
+        var surf_low = d.feed.entry[8].content.$t;
+        var surf_high = d.feed.entry[11].content.$t;
+        var water_low = d.feed.entry[9].content.$t;
+        var water_high = d.feed.entry[12].content.$t;
+        $("div").html("San Diego Surf height for tomorrow is "+surf_low+" to "+surf_high+" Feet, with water temperature between "+water_low+" and "+water_high+" degrees Fahrenheit");
         console.log(d);
     }
 </script>
 </head>
 <body>
-    <div>testing..</div>
-<script type="text/javascript" src="https://spreadsheets.google.com/feeds/list/0Akgd2WiouvmpdFRvZEJsamNUMDVITU9RRjVzNlVYcHc/od6/public/basic?alt=json-in-script&callback=data_loaded"></script>
+    <div>loading..</div>
+<script type="text/javascript" src="https://spreadsheets.google.com/feeds/cells/0Akgd2WiouvmpdEhXNWQyOHRqTWZhVWJUREt3M1l5Mnc/od6/public/basic?alt=json-in-script&callback=data_loaded"></script>
 </body>
 </html>

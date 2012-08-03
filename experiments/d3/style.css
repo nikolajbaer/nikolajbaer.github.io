@@ -4,4 +4,10 @@ body {
     padding: 0px;
     margin: 0px;
     background-color: #000;
+    color: #eee;
+    font-family: sans-serif;
+}
+div {
+    margin: 50px auto;
+    text-align: center;
 }
