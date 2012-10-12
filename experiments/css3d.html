@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>CSS3d playground</title>
+<title>Nikolaj Baer</title>
 <style type="text/css">
     body {
         margin: 0px;
@@ -8,40 +8,60 @@
         width: 100%;
         height: 100%;
         background-color: #111;
+        overflow: hidden;
     }
-    .target {
-        position: absolute;
-        top:50%;
-        left: 50%;
-        width: 300px;
-        height: 200px;
-        margin-top: -150px;
-        margin-left: -150px;
-        background-color: #fff;
+    .char {
+        margin-top: -1.01em;
+        margin-left: -1em;
+        color: #fff;
+        font-size: 48pt;
+        font-family: Garamond;
+        width: 50px;
+        height: 50px;
 
         /* CSS3 Stuff */
         /*-webkit-transform: rotate3d(0,1,1,30deg) scale3d(0.5,1,1);*/
         /*border-radius: 150px; */
-        /* -webkit-transform: perspective(800) translate3d(0px,0px,1000px) rotate3d(0,1,0,20deg); */
+        -webkit-transform: perspective(800);
+        -webkit-transorm-origin: 50% 50% 50%;
     }
-    #target_0 {
-        /*-webkit-transform: perspective(800) translate3d(0px,0px,1000px) rotate3d(0,1,0,20deg);*/
-        /*-webkit-transform: perspective(800)  translate3d(0px,0px,1000px)  rotate3d(0,1,0,50deg);*/
+    .last {
+        position:absolute;
+        top: 75%;
+        left: 75%;
+        color: #eef;
+    }
+    .past {
+        color: #efe;
+    }
+    .twirl {
+        -webkit-transform: rotate3d(0,1,0,20deg) rotate3d(0,0,1,15deg) rotate3d(1,0,0,5deg) scale(0.99);
+        -webkit-backface-visibility: visible;
     }
 </style>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
 <script type="text/javascript">
     var TRANS_BASE = "perspective(900)";
+
+    function type(c){
+        $(".past").addClass("twirl").removeClass("past"); 
+        $(".last").addClass("past").removeClass("last");
+        $("body").append('<div class="char last">'+c+'</div>');
+        $(".past").appendTo(".last");
+        // TODO rotate all the old ones
+    }
+    
     $(document).ready(function(){
-        for(var i=0;i<10;i++){
-            var t=  "-webkit-transform: "+TRANS_BASE+" translate3d("+(i*80)+"px,0px,100px)"+
-                                " rotate3d(0,1,0,"+(i*8 + 50)+"deg);";
-            $("body").append('<div id="target_'+i+'" style="'+t+'" class="target"></div>');
-            console.log("-webkit-transform: "+t);
-            //$("#target_"+i).css("-webkit-transform",t);        
-            //console.log("target_"+i+" -webkit-transform: "+$("#target_"+i).css("-webkit-transform"));
-        }        
-    });     
+        $("body").keypress(function(e){
+            e.preventDefault();
+            var s = String.fromCharCode(e.charCode);
+            if(/[\w\d\ ]+/.test(s)){
+                //console.log(s);
+                type(s);
+            }
+        });     
+        latest = $("body")[0];
+    });
 </script>
 </head>
 <body>
