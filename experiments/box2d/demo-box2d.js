@@ -1,4 +1,12 @@
 // Example base from http://lavadip.com/experiments/box2d_demo/
+/*
+notes:
+check out:
+http://quickb2.dougkoellmer.com/bin/qb2DemoReel.swf
+http://www.iforce2d.net/b2dtut/top-down-car
+
+
+*/
 
 function createWorld() {
     var worldAABB = new b2AABB();
