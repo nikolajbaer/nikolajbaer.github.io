@@ -14,6 +14,7 @@
         position: relative;
         left: 50%;
         top: 50%;
+        -webkit-transform-style: preserve-3d;
         -webkit-transform: translate3d(-500px,-500px,-100px) rotate3d(1,0,0,80deg);
     }
     #ground {
@@ -23,7 +24,7 @@
         -webkit-animation-name: rotation;
         -webkit-animation-timing-function: ease;
         -webkit-animation-iteration-count: infinite;
-        -webkit-animation-duration: 15s;
+        -webkit-animation-duration: 8s;
 
     }
 
@@ -35,9 +36,16 @@
         -webkit-transorm-origin: 50% 50% 50%;
         -webkit-transform-style: preserve-3d;
     }
+    .building {
+        width: 50px;
+        height: 50px;
+        background-color: #00f;
+        -webkit-transform-style: preserve-3d;
+    }
     .wall {
         height: 50px;
         width: 50px;
+        opacity: 0.5;
         background-color: #f00;
          -webkit-transform: rotate3d(1,0,0,90deg);
     }
