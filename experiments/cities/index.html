@@ -49,12 +49,23 @@
         background-color: #f00;
          -webkit-transform: rotate3d(1,0,0,90deg);
     }
-    /* panes facing North/West/East/South  
-    .n { -webkit-transform: rotate3d(0,1,0,90deg) rotate3d(1,0,0,90deg); }
-    .w { -webkit-transform: rotate3d(0,1,0,180deg) rotate3d(1,0,0,90deg);  }
-    .e { -webkit-transform: rotate3d(0,1,0,270deg) rotate3d(1,0,0,90deg); } 
-    .s { -webkit-transform: rotate3d(0,1,0,0deg) rotate3d(1,0,0,90deg);  }
-    */
+    /* panes facing North/West/East/South */
+    .n {
+        -webkit-transform: rotate3d(0,0,1,90deg) rotate3d(1,0,0,90deg); 
+        /* -webkit-transorm-origin: 50% 50% 50%; */
+    }
+    .w { 
+        -webkit-transform: rotate3d(0,0,1,180deg) rotate3d(1,0,0,90deg); 
+        /* -webkit-transorm-origin: 50% 50% 50%; */
+    }
+    .e {
+        -webkit-transform: rotate3d(0,0,1,270deg) rotate3d(1,0,0,90deg);
+        /* -webkit-transorm-origin: 50% 50% 50%; */
+    } 
+    .s {
+        -webkit-transform: rotate3d(0,0,1,0deg) rotate3d(1,0,0,90deg);
+        /* -webkit-transorm-origin: 50% 50% 50%; */
+    }
 
     @-webkit-keyframes rotation
     {
