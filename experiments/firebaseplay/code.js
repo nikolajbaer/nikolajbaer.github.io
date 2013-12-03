@@ -17,3 +17,5 @@ $(document).ready(function(){
         $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
       };
 });
+
+
