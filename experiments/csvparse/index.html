@@ -1,0 +1,57 @@
+<html>
+<head>
+    <title>File Upload Field Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script>
+
+        function log_output(log){
+            $("#output").append(log);
+        }
+        
+        function onFileLoadEnd(e){
+            log_output("load end\n\nContents:\n\n");
+            if(e.target.readyState == FileReader.DONE){
+                log_output(e.target.result);                
+            } 
+        }
+
+        function handleFileSelect(e){
+            var files = e.target.files; 
+            for(var i=0;i<files.length;i++){
+                log_output("Sz: "+files[i].size);
+
+                var reader = new FileReader();
+                reader.onloadend=onFileLoadEnd;
+                var blob = files[i].slice(0,files[i].size);
+                reader.readAsBinaryString(blob);
+            }
+        }
+
+        $(document).ready(function(){
+            $("#myfile").change(handleFileSelect);
+        });
+    </script>
+</head>
+<body>
+    <div class="wrap">
+
+        <!-- form -->
+        <div class="container">
+            <h1>CSV Client Side Parse Test</h1>
+            <h3>Drop file here to parse</h3>
+            <p><input id="myfile" type="file" class="form-control" required></p>
+        </div>
+
+        <!-- result -->
+        <div class="container">
+            <h2>Output</h2>
+            <pre id="output">
+                Nothing here yet!
+            </pre>
+        </div>
+    </div>
+</body>
+</html>
