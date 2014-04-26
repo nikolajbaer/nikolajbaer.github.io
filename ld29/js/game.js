@@ -3,6 +3,7 @@
 Crafty.c('Player', {
     init: function() {
         this._carrying = null;
+        this._underground = false;
         this.requires('2D, Canvas, Actor, Fourway, Color, Gravity, Collision')
             .fourway(4)
             .color('rgb(200,200,200)')
@@ -11,6 +12,14 @@ Crafty.c('Player', {
             if(this._carrying){
                 this._carrying.y = this.y;
                 this._carrying.x = this.x;
+            }
+        
+            if(this.y > Crafty("TheSurface").y - 10){
+                this.antigravity();
+                this._underground = true;
+            }else if(this._underground){
+                this.gravity("Floor");
+                this._underground = false;
             }
         });
     }
