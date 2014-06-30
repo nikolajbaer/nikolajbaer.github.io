@@ -76,6 +76,17 @@
 				</section>
 
 				<section>
+					<h2>Why Code Games?</h2>
+					<ul>
+                        <li>Tap into your inner creative</li>
+                        <li>Hone Realtime Skills</li>
+                        <li>Push Platform Envelope</li>
+                        <li>Build Something Whimsical</li>
+                        <li>Entertain Someone You Like!</li>
+                    </ul>
+                </section>
+
+				<section>
 					<h2>How I Found Crafty.js</h2>
 					<ul>
                         <li>Wanted to do <a href="http://www.ludumdare.com/">Ludum Dare 29</a></li>
@@ -148,6 +159,80 @@ Crafty.e("RightPoints, DOM, 2D, Text")
                 </section>
 
 				<section>
+					<h2>Wait, a Little Slower!</h2>
+				</section>
+
+				<section>
+					<h2>First, Make your "Stage"</h2>
+					<pre><code data-trim contenteditable>
+Crafty.init(600, 300);
+Crafty.background('rgb(127,127,127)');
+   					</code></pre>
+				</section>
+             
+				<section>
+					<h2>Then, Make The Paddles</h2>
+					<pre><code data-trim contenteditable>
+//Paddles
+Crafty.e("Paddle, 2D, DOM, Color, Multiway")
+    .color('rgb(255,0,0)')
+    .attr({ x: 20, y: 100, w: 10, h: 100 })
+    .multiway(4, { W: -90, S: 90 });
+Crafty.e("Paddle, 2D, DOM, Color, Multiway")
+    .color('rgb(0,255,0)')
+    .attr({ x: 580, y: 100, w: 10, h: 100 })
+    .multiway(4, { UP_ARROW: -90, DOWN_ARROW: 90 });
+   					</code></pre>
+				</section>
+             
+				<section>
+					<h2>Now a Ball</h2>
+					<pre><code data-trim contenteditable>
+//Ball
+Crafty.e("2D, DOM, Color, Collision")
+    .color('rgb(0,0,255)')
+    .attr({ x: 300, y: 150, w: 10, h: 10,
+            dX: Crafty.math.randomInt(2, 5),
+            dY: Crafty.math.randomInt(2, 5) })
+    .bind('EnterFrame', function () {
+        //hit floor or roof
+        if (this.y <= 0 || this.y >= 290)
+            this.dY *= -1;
+
+        if (this.x > 600) {
+            this.x = 300;
+            Crafty("LeftPoints").each(function () {
+                this.text(++this.points + " Points") });
+        }
+        if (this.x < 10) {
+            this.x = 300;
+            Crafty("RightPoints").each(function () {
+                this.text(++this.points + " Points") });
+        }
+
+        this.x += this.dX;
+        this.y += this.dY;
+    })
+    .onHit('Paddle', function () {
+    this.dX *= -1;
+})
+   					</code></pre>
+				</section>
+             
+				<section>
+					<h2>And some Scoreboards</h2>
+					<pre><code data-trim contenteditable>
+//Score boards
+Crafty.e("LeftPoints, DOM, 2D, Text")
+    .attr({ x: 20, y: 20, w: 100, h: 20, points: 0 })
+    .text("0 Points");
+Crafty.e("RightPoints, DOM, 2D, Text")
+    .attr({ x: 515, y: 20, w: 100, h: 20, points: 0 })
+    .text("0 Points");
+					</code></pre>
+				</section>
+
+				<section>
 					<h2>The Basics</h2>
 					<ul>
                         <li>Entities and Components</li>
@@ -175,7 +260,7 @@ Crafty.e("Paddle, 2D, DOM, Color, Multiway")
 
                 <section>
                     <h2>Components</h2>
-                    <p>Components let you add bits of functionality to different entities in structural ways. You can build on top of other components by calling "requies"</p>
+                    <p>Components let you add bits of functionality to different entities in structural ways. You can build on top of other components by calling "requires"</p>
     		        <pre><code data-trim contenteditable>
 // Define a new component, Thing
 Crafty.c('Thing', {
@@ -188,19 +273,96 @@ Crafty.c('Thing', {
         // And a part of the 2d method
         this.attr({w:30,h:30});
             
-    },
+    }
 });
                     </code></pre>
                 </section>
 
+                <section>
+                    <h2>Using Your Component</h2>
+    		        <pre><code data-trim contenteditable>
+Crafty.e('Thing')
+    .attr({x:10,y:10}); // set the position on the entity
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Building on Your Component</h2>
+    		        <pre><code data-trim contenteditable>
+Crafty.e('SpecialThing', {
+    init: function(){
+        this.requires('2D, DOM, Color');
+        this.color('rgb(0,255,0)');
+    }
+};
+                    </code></pre>                    
+                </section>
+
+                <section>
+                    <h2>Querying Components</h2>
+    		        <pre><code data-trim contenteditable>
+Crafty(1); // entity with id 1
+// or query all the entities with the stated components
+Crafty('Thing').each(function(i){
+    // i = element index
+    this.do_something(); // this is the entity
+    if(this.has("SpecialThing")){
+        this.do_something_special();
+    }
+});                    
+                    </code></pre>                    
+                </section>
+
+                <section>
+                    <h2>.. and more Querying</h2>
+    		        <pre><code data-trim contenteditable>
+Crafty('2D Color'); // all entities with both 2d AND color
+Crafty('2D,Color'); // all entieis with 2d OR color
+                    </code></pre>
+                </section>
+
+                <section>
+                    <h2>Summry - Super Composability</h2>
+                    <ul>
+                        <li>Encapsulate Functionality</li>
+                        <li>Brew at instance creation time</li>
+                        <li>Very Much Like Mixins..</li>
+                    </ul>
+                </section>
+
 				<section>
 					<h2>Bind Events</h2>
-                    <p>TODO</p>
+                    <ul>
+                        <li>Pub/Sub Style</li>
+                        <li>e.g. .bind() &amp; .trigger()</li>
+                    </ul>
+                    <pre><code>
+        Crafty.e('2D, Canvas, Color')
+            .attr({x:10,y:10,w:5,h:5})
+            .bind('EnterFrame', function () {
+                this.rotation += 10; // spin
+            });
+                    </code></pre>
+
                 </section>
    
 				<section>
-					<h2>Ok Make a Scene</h2>
-                    <p>TODO</p>
+					<h2>Ok, You Are Getting The Point </h2>
+                    <ul>
+                        <li>VERY Composable</li>
+                        <li>Lots of basic batteries included</li>
+                        <li>Incredibly Natural for JS Programmers</li>
+                        <li>Cool, eh?</li>
+                    </ul>
+                </section>
+
+				<section>
+					<h2>Lets Make Something</h2>
+                    <ul>
+                        <li>My creatity/time was challenged so..</li>
+                        <li>Re-implement a formulaic game ..</li>
+                        <li>Breakout!</li>
+                    </ul>
                 </section>
 
 				<section>
