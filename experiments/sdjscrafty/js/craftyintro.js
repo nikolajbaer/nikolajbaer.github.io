@@ -1,5 +1,8 @@
+var crafty_pong=false;
 function init_pong(stage_id){
+    if(crafty_pong){ return; }
 
+    crafty_pong=true;
     Crafty.init(600, 300,stage_id);
     Crafty.background('rgb(127,127,127)');
     //Paddles

@@ -54,6 +54,7 @@
 					    Per <a href="http://craftyjs.com/">craftyjs.com</a>, Crafty is
 "Crafty is a JavaScript game library that can help you create games in a structured way..."
 					</p>
+                    <p>Created by <a href="https://github.com/louisstow/">Louis Stowasser</a></p>
 				</section>
 
 				<section>
@@ -123,12 +124,12 @@ Crafty.e("2D, DOM, Color, Collision")
         if (this.y <= 0 || this.y >= 290)
             this.dY *= -1;
 
-        if (this.x > 600) {
+        if (this.x &gt; 600) {
             this.x = 300;
             Crafty("LeftPoints").each(function () {
                 this.text(++this.points + " Points") });
         }
-        if (this.x < 10) {
+        if (this.x &lt; 10) {
             this.x = 300;
             Crafty("RightPoints").each(function () {
                 this.text(++this.points + " Points") });
@@ -196,15 +197,15 @@ Crafty.e("2D, DOM, Color, Collision")
             dY: Crafty.math.randomInt(2, 5) })
     .bind('EnterFrame', function () {
         //hit floor or roof
-        if (this.y <= 0 || this.y >= 290)
+        if (this.y &lt;= 0 || this.y &gt;= 290)
             this.dY *= -1;
 
-        if (this.x > 600) {
+        if (this.x &gt; 600) {
             this.x = 300;
             Crafty("LeftPoints").each(function () {
                 this.text(++this.points + " Points") });
         }
-        if (this.x < 10) {
+        if (this.x &lt; 10) {
             this.x = 300;
             Crafty("RightPoints").each(function () {
                 this.text(++this.points + " Points") });
@@ -291,7 +292,7 @@ Crafty.e('Thing')
     		        <pre><code data-trim contenteditable>
 Crafty.e('SpecialThing', {
     init: function(){
-        this.requires('2D, DOM, Color');
+        this.requires('Thing');
         this.color('rgb(0,255,0)');
     }
 };
@@ -321,15 +322,6 @@ Crafty('2D,Color'); // all entieis with 2d OR color
                     </code></pre>
                 </section>
 
-                <section>
-                    <h2>Summry - Super Composability</h2>
-                    <ul>
-                        <li>Encapsulate Functionality</li>
-                        <li>Brew at instance creation time</li>
-                        <li>Very Much Like Mixins..</li>
-                    </ul>
-                </section>
-
 				<section>
 					<h2>Bind Events</h2>
                     <ul>
@@ -343,11 +335,106 @@ Crafty('2D,Color'); // all entieis with 2d OR color
                 this.rotation += 10; // spin
             });
                     </code></pre>
-
                 </section>
-   
+
 				<section>
-					<h2>Ok, You Are Getting The Point </h2>
+					<h2>Ok, Cool Core, Now the Goodies</h2>
+                    <ul>
+                        <li>Lots of Nice Included Stuff</li>
+                        <li>Really easy to extend with Modules</li>
+                    </ul>
+                </section>
+
+				<section>
+					<h2>Input!</h2>
+                    <ul>
+                        <li>Keyboard &amp; Mouse</li>
+                        <li>Maybe forthcoming Joystick API?</li>
+                    </ul>
+                </section>
+
+				<section>
+					<h2>The Easy "Multiway"</h2>
+                    <ul>
+                        <li>Twoway, Fourway, Multiway</li>
+                        <li>Jumping and Gravity, check!</li>
+                    </ul>
+                    <pre><code>
+
+        Crafty.e("Chainsaw, Fourway, 2D, Canvas, Gravity")
+            .attr({x:10,y:10,w:50,h:50})
+            .speed(2);
+
+                    </code></pre>
+                </section>
+
+				<section>
+					<h2>Track keys in Entity</h2>
+                    <pre><code>
+
+         Crafty.e("Chainsaw, 2d,Canvas,Fourway,Keyboard")
+            .attr({chainsaw_on:false})
+            .bind('EnterFrame', function(){
+                this.chainsaw_on = this.isDown('SPACE');
+            });
+                    </pre></code> 
+                </section>
+
+  				<section>
+					<h2>Using Sprites</h2>
+                    <ul>
+                        <li>Supports loading sprite maps</li>
+                        <li>Just binds to components</li>
+                        <li>Animations supported too</li>
+                    </ul>
+                    <pre><code>
+        Crafty.sprite(32,32,'sprite.png',{tree:[0,0],bush:[0,1]});
+        Crafty.e('Canvas, tree')
+            .attr({x:10,y:10,w:5,h:5});
+        Crafty.e('Canvas, bush')
+            .attr({x:10,y:10,w:5,h:5});
+
+        // 1s animation, from 0,1 (tile index) with 4 frames
+        Crafty.e("2D, DOM, SpriteAnimation, PlayerSprite")
+            .reel('PlayerRunning', 1000, 0, 1, 4); 
+        
+                    </code></pre>
+				</section>
+
+  				<section>
+					<h2>Track Collisions</h2>
+                    <ul>
+                        <li>Basic 2D collision support</li>
+                        <li>Rectangle, Circle or Polygon hitboxes</li>
+                    </ul>
+                    <pre><code>
+        Crafty.e('Chainsaw, 2D, Canvas, Color, Collision')
+            .attr({x:10,y:10,w:5,h:5,wood:0})
+            .onHit('tree',function(trees){
+                for(var i=0;i &lt; trees.length;i++){
+                    trees[i].destroy();
+                    this.wood+=1;
+                }
+            });
+                    </code></pre>
+				</section>
+
+				<section>
+					<h2>Make Some Noise</h2>
+                    <ul>
+                        <li>Play/Pause/Stop</li>
+                        <li>Supports loading in multiple formats (ogg,wav,mp3)</li>
+                    </ul>
+                    <pre><code>
+            Crafty.audio.add("boink","sound/boink.mp3");
+            Crafty.audio.play("boink");
+            // for background muzak
+            Crafty.audio.play("muzak",-1);
+                    </code></pre>
+                </section>
+
+                  <section>
+                    <h2>Summary - Super Composability</h2>
                     <ul>
                         <li>VERY Composable</li>
                         <li>Lots of basic batteries included</li>
@@ -366,27 +453,19 @@ Crafty('2D,Color'); // all entieis with 2d OR color
                 </section>
 
 				<section>
-					<h2>Toss in some Sprites</h2>
-                    <p>TODO</p>
+					<h2>Demo / Code Walkthrough</h2>
+                    <p>
+                        <a target="_blank" href="demo1.html">Breakout</a>
+                    </p>
                 </section>
 
 				<section>
-					<h2>Add Some Collisions</h2>
-                    <p>TODO</p>
+					<h2>Thank You!</h2>
+                    <p>Go Make a Game!</p>
                 </section>
 
 				<section>
-					<h2>Add Some Game Logic</h2>
-                    <p>TODO</p>
-                </section>
-
-				<section>
-					<h2>Hopefully Something Cool to Demo</h2>
-                    <p>TODO</p>
-                </section>
-
-				<section>
-					<h2>Extra Credit - Multiplayer with Firebase</h2>
+					<h2>Extra Credit - Firebase Scoreboard</h2>
                     <p>TODO</p>
                 </section>
  

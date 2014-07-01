@@ -5,86 +5,139 @@
     </style>
   </head>
   <body>
+    <!-- Assets for this game pulled from:
+    Flags: https://github.com/lafeber/world-flags-sprite
+    Soccer Ball: http://commons.wikimedia.org/wiki/File:Soccerball.png
+    Grass: http://opengameart.org/node/15601
+    Boink Sound: http://www.freesound.org/people/davepape/sounds/9943/
+    -->
     <div id="game"></div>
     <script type="text/javascript" src="js/crafty.js"></script>
 
     <script>
         var width = window.innerWidth;
         var height = window.innerHeight;
+        var maxspd = 15;
+        var ballspd = 8;
 
-        Crafty.init(width,height, document.getElementById('game'));
+        Crafty.init(width-(width%32),height, document.getElementById('game'));
+        Crafty.background("url('img/grass.png') repeat");
+        Crafty.audio.add("boink","snd/boink.mp3");
+        Crafty.audio.add("boing","snd/boing.mp3");
+
+        // Load flags sprite
+        var flags  = {"Brazil": [0, 50], "Italy": [0, 120], "USA": [0, 229], "Costa Rica": [0, 67], "France": [0, 89], "Ivory Coast": [0, 61], "Argentina": [0, 25], "Cameroon": [0, 64], "Nigeria": [0, 175], "Ecuador": [0, 78], "Ghana": [0, 95], "Australia": [0, 33], "Iran": [0, 118], "Algeria": [0, 23], "Korea Republic": [0, 132], "Germany": [0, 105], "Bosnia and Herzegovina": [0, 48], "Chile": [0, 63], "Belgium": [0, 41], "Spain": [0, 83], "Netherlands": [0, 169], "Croatia": [0, 61], "Switzerland": [0, 212], "England": [0, 7], "Russia": [0, 194], "Honduras": [0, 108], "Portugal": [0, 187], "Uruguay": [0, 230], "Mexico": [0, 164], "Colombia": [0, 62], "Greece": [0, 102], "Japan": [0, 124]}
+
+        var countries = [];
+        for(var c in flags){ countries.push(c); }
+        Crafty.sprite(32,32,"img/flags32.png", flags);
+        Crafty.sprite("img/ball.png",{"Soccer":[0,0,32,32]});
+        
 
         // Generate the breakout bricks
-        var W = 13;
+        var W = (width - (width%32))/32;
         var ROWS = 3;
-        var BW = width/W;
+        var BW = 32;
+        var k=0; 
         for(var i=0;i<W*ROWS;i++){
-            Crafty.e('Brick, 2D, DOM,  Color')
-                .color(i%2?'red':'blue')
-                .attr({x:(i%W)*BW+1,y:Math.floor(i/W)*BW+1,w:BW-2,h:BW-2})
+            console.log(countries[k%countries.length]);
+            Crafty.e('Brick, Canvas, '+countries[k%countries.length])
+                .attr({x:(i%W)*BW+1,y:Math.floor(i/W)*BW+1})
+            k++;
         }
 
         Crafty.c('Ball',{
             init: function() {
-                this.requires('2D, DOM, Color, Collision');
-                this.attr({w: 10, h: 10});
-                this.color('green');
+                this.requires('2D, Canvas, Collision');
                 this.onHit('Brick',function(bricks){
-                    console.log(bricks);
                     for(var b=0;b<bricks.length;b++){
+                        var opts = {
+                            maxParticles: 6,
+                            size: 12,sizeRandom: 6,
+                            speed: 20,speedRandom: 1.2,
+                            lifeSpan: 10, lifeSpanRandom: 2,
+                            angle: 0, angleRandom: 360,
+                            startColour: [255,255,255,1], startColorRandom: [0,20,20,0],
+                            endColour: [255,0,0,0.5], endColourRandom: [0,0,0,0.5],
+                            spread: 16, duration: 10, fastMode: false,
+                            gravity: {x:0,y:0}
+                        }
+                        Crafty.e('2D,Canvas,Particles')
+                            .attr({x:bricks[b].obj.x,y:bricks[b].obj.y})
+                            .particles(opts)
+                            .bind('ParticleEnd',function(){
+                                this.destroy();
+                            });
                         bricks[b].obj.destroy();
+                        Crafty("Points").each(function () {
+                            this.text(++this.points + " Points") 
+                        });
                     }
                     this.dY *= -1;
+                    Crafty.audio.play("boink");
                 });
                 this.onHit('Paddle',function(paddles){
                     var p = paddles[0].obj;
                     this.dX += p.v/4;
                     this.dY *= -1;
+                    Crafty.audio.play("boing");
                 });
                 this.bind('EnterFrame',function(){
                     this.x += this.dX;
                     this.y += this.dY;
                     if(this.x < 0){ this.dX *= -1; }
-                    if(this.y < 0){
-                        this.destroy();
-                        Crafty.trigger("Point");
-                    }
+                    if(this.y < this.h){ this.dY *= -1; }
                     if(this.y > Crafty.viewport.height){
                         this.destroy();
                         Crafty.trigger("Miss");
                     }
-                    if(this.x > Crafty.viewport.width){
+                    if(this.x > width-this.w){
                         this.dX *= -1;
                     }
+                    this.rotation += 1;
                 });
             },
             launch:function(x,y){
-                this.attr({x:x,y:y-this.h,dX:0,dY:-5});
+                this.attr({x:x,y:y-this.h,dX:0,dY:-ballspd});
             } 
         }); 
 
-        Crafty.e('Paddle, 2D, DOM, Color, Keyboard, Mouse')
-          .attr({x: width/2, y: height-BW/4, w: BW*2, h: BW/2,v:0})
+        Crafty.e('Paddle, 2D, Canvas, Color, Keyboard, Mouse')
+          .attr({x: width/2 - BW, y: height-BW, w: BW*2, h: BW/2,v:0})
           .color('#F00')
-          .bind('updateStats',function(e){
-            console.log("mouse move",e);
-            this.mouseRealX = e.realX;
-          })
           .bind('EnterFrame',function(){
             if(this.isDown('LEFT_ARROW')){ this.v += -3; }
             else if(this.isDown('RIGHT_ARROW')){ this.v += 3; }
+            else{ 
+                if(this.v > 0){ this.v -= 3; }
+                else if(this.v < 0){ this.v += 3; }
+            }
 
-                 
+            if(this.v < -maxspd){ this.v = -maxspd; }
+            if(this.v > maxspd){ this.v = maxspd; }
 
-            this.x += this.v; //this.mouseRealX; 
+            this.x += this.v;
+
+            if(this.x > width - this.w){
+                this.x = width - this.w;
+            }
+            if(this.x < 0){
+                this.x = 0;
+            }
             
             if(this.isDown('SPACE')){
                 if(Crafty('Ball').length == 0){
-                    Crafty.e('Ball')
+                    Crafty.e('Ball, Soccer')
                         .launch(this.x+this.w/2,this.y-this.h/2)
                 }
             }
           });
+
+        Crafty.e("Points, DOM, 2D, Text")
+            .attr({ x: 20, y: height - 65, w:400,h:35, points: 0 })
+            .textFont({type:'bold',family:'Arial',size:"32px"})
+            .textColor("#FF0000",1.0)
+            .text("0 Points");
 
     </script>
   </body>
