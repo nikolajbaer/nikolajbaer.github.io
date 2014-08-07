@@ -1,8 +1,9 @@
 /* Requires Crafty */
 
-/* TODO add path finding, and behaviour stuff here
+/* TODO add path finding, and behaviour stuff here */
 
 // TODO make NPC 
+
 Crafty.c("NPC", {
     init: function(){
         this.requires('2D, Canvas')
