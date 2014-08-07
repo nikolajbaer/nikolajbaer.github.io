@@ -78,14 +78,33 @@ Crafty.c('PlayerCharacter', {
     }
 });
 
+
+// TODO
+// Build character attractors and repulsors in dependency graph
+// Somehow these need to be organized in events that will resolve each dependency
+// when a player 'interacts', we need to figure out if they have resolved the current event, if so, figure out next dependency and communicate to the player 
+// 
+// identfy end-goal as well   
+// 
 Crafty.c('NPC', {
     init: function() {
-        this.requires('Actor, Color, Solid')
-            .color('red');
+        this.requires('Actor, Color')
+            .color('red')
+            .attr({lastChat:0});
+    },
+
+    ready_to_interact: function(){
+        var t = new Date().getTime();
+        if(t-this.lastChat > 5000){
+            this.lastChat = t;
+            return true;
+        }
+        return false;
     },
 
     interact: function(player) {
-        console.log("I am interacting with "+player.name);
+        if(!this.ready_to_interact()){ return; }
+        Game.msg("Hello "+player.name,this.name);
     }
 
 });
@@ -125,13 +144,34 @@ Game = {
         }
     },
 
+    msg: function(text, from){
+        Crafty("Message").each(function(){
+            this.attr({alpha:1.0})
+                .text(from+": "+text)
+                .textFont({ size: '20px', weight: 'bold' })
+                .textColor("#FFFFFF",0.8)
+                .tween({alpha:0.0},4000)
+        });
+    },
+
     init: function(game_id){
         Crafty.init(Game.width(), Game.height(),game_id);
         Crafty.background('black');
         this.gen_map();
     
         Crafty.e("PlayerCharacter").attr({name:"Hodor"}).place(2,2);
-        Crafty.e("NPC").place(this.viewport.world.w - 3, this.viewport.world.h - 3);
+        Crafty.e("NPC")
+            .attr({name:"Kalis"})
+            .place(this.viewport.world.w - 3, this.viewport.world.h - 3);
+
+        Crafty.e("2D, DOM, Text, Tween, Delay, Message")
+            .attr({ x:this.width()/2 - 100,
+                    y:this.height()/2 - 50,
+                    w:200,
+                    h:100,
+                    alpha: 0.0
+            })
+
     }
 
     
