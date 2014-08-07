@@ -238,9 +238,8 @@ Crafty.e("RightPoints, DOM, 2D, Text")
 					<ul>
                         <li>Entities and Components</li>
                         <li>Events</li>
-                        <li>Rendering</li>
+                        <li>Sprites</li>
                         <li>Controls</li>
-                        <li>Scenes</li>
 					</ul>
 				</section>
 
@@ -412,7 +411,7 @@ Crafty('2D,Color'); // all entieis with 2d OR color
             .attr({x:10,y:10,w:5,h:5,wood:0})
             .onHit('tree',function(trees){
                 for(var i=0;i &lt; trees.length;i++){
-                    trees[i].destroy();
+                    trees[i].obj.destroy();
                     this.wood+=1;
                 }
             });
@@ -433,6 +432,14 @@ Crafty('2D,Color'); // all entieis with 2d OR color
                     </code></pre>
                 </section>
 
+				<section>
+					<h2>Extend It!</h2>
+                    <ul>
+                        <li>You can add more modules</li>
+                        <li>But don't follow the wiki link to <a href="http://craftycomponents.com">craftycomponents.com</a></li>
+                    </ul>
+                </section>
+ 
                   <section>
                     <h2>Summary - Super Composability</h2>
                     <ul>
@@ -444,7 +451,7 @@ Crafty('2D,Color'); // all entieis with 2d OR color
                 </section>
 
 				<section>
-					<h2>Lets Make Something</h2>
+					<h2>Another Example!</h2>
                     <ul>
                         <li>My creatity/time was challenged so..</li>
                         <li>Re-implement a formulaic game ..</li>
@@ -461,6 +468,7 @@ Crafty('2D,Color'); // all entieis with 2d OR color
 
 				<section>
 					<h2>Thank You!</h2>
+                    <p>Questions?</p>
                     <p>Go Make a Game!</p>
                 </section>
 
