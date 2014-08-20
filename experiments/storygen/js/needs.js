@@ -1,4 +1,5 @@
 // See idea.txt
+// CONSIDER is this just a behaviour tree, or does it run in parallel to the behaviour tree?
 
 // The Abstract Need, use prototype to build on this
 // for specific need conditions
@@ -8,6 +9,10 @@ var Need = function(){
    
     // An optional behaviour to exhibit on successful result
     this.result_behaviour = null;
+
+    // Why is this needed? TODO figure out how to make this 
+    // help us explain a character's motivations
+    this.reason = null;
 
     // Whether this node can immediately be resolved if all dependencies are met
     // (e.g. override to evaluate a local dependency, like $ in bank account)
@@ -39,7 +44,7 @@ var Need = function(){
 var NeedItem = function(item){
     this.item = item;
     this.can_resolve = function(character){
-        return character.hasItem(this.item);
+        return character.has_item(this.item);
     }
 }
 NeedItem.prototype = Need;
@@ -48,15 +53,16 @@ NeedItem.prototype = Need;
 // Successful if any one of the needs are met
 var NeedOneOfThese = function(needs){
     this.needs = needs;
-    this.is_resolved = funtion(character){
+    this.is_resolved = function(character){
         var r = false;
         for(var n in this.needs){
             if(n.is_resolved(character)){
-            return this.can_resolve(character);  
+                return this.can_resolve(character);  
+            }
+            return false;
         }
-        return false;
     }
 }
-NeedThisOrThat.prototype = Need;
+NeedOneOfThese.prototype = Need;
 
 
