@@ -90,7 +90,7 @@ Crafty.c('NPC', {
     init: function() {
         this.requires('Actor, Color')
             .color('red')
-            .attr({lastChat:0});
+            .attr({lastChat:0,inventory:[]});
     },
 
     ready_to_interact: function(){
@@ -105,8 +105,15 @@ Crafty.c('NPC', {
     interact: function(player) {
         if(!this.ready_to_interact()){ return; }
         Game.msg("Hello "+player.name,this.name);
-    }
+    },
 
+    // Assume inventory items have a .name, that corresponds
+    hasItem: function(item) {
+        for(var i in this.inventory){
+            if(i.name == item){ return true; }
+        }
+        return false;
+    } 
 });
 
 // Game object

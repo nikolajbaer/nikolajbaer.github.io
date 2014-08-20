@@ -1,0 +1,37 @@
+The Big Idea
+============
+
+- Each Character has a Goal, e.g.
+  - Need: Some ice cream 
+
+- The goal has dependencies, e.g.
+  - Need: Money
+  - Need: To be at ice cream shop
+    - Need: Car
+  - Each dependency can have more dependencies
+
+- Each dependency has a "test" to see if it is resolved
+- We continuously evaluate the dependencies to figure out if we have reached our Goal
+
+- how do we structure the "needs" for the dependencies 
+  - e.g. qualifiers, like "$1 in inventory", or "at location", or "in car" 
+- how do we link to this to behaviours?
+  - e.g. once car dependency is resolved, Character would change behaviour to drive to ice cream shop on their own
+
+
+Making this Generative
+----------------------
+
+The thought is once we have this dependency graph setup, we can generate dependency graphs and layer them across each other so some characters have needs from others, and possibly conflicting goals. Then, the idea is that your player goes through the game engaging, finding these goals/dependencies, and resolving them to help your desired character succeed. 
+
+
+
+
+References
+----------
+
+http://alumni.media.mit.edu/~jorkin/gdc2006_orkin_jeff_fear.pdf
+http://notmagi.me/behavior-trees-number-1/
+http://www.electricmonk.nl/docs/dependency_resolving_algorithm/dependency_resolving_algorithm.html
+
+
