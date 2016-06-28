@@ -1,450 +1,284 @@
 
 var chord = ["C4","E4","G4"];
+var root = 0;
+var octave = 4; 
+var voicing = [0,4,7];
+
+var freqs = [];
+var oscillators = [];
+var gnode = null;
+var canvas = null;
+var ctx = null;
+var atx = null;
+var source = null;
+var t=0;
+var fade = 1;
+var graph_height = 0;
+var xpand = 1;
+var mute = true;
+var MAX_GAIN = 0.5;
+var TICK = 35;
+var BPM = 120;
+var MEASURE = 4;
+var beat_count = 0;
+var BEAT = 60/BPM * 1000;
+
+function init_audio(){
+    atx = new (window.AudioContext || window.webkitAudioContext)();
+    gnode = atx.createGain();
+    gnode.gain.value = 0.0; //mute
+    gnode.connect(atx.destination);
+}
+
+function init_canvas(){
+    // Sine wave drawing from https://jsfiddle.net/hashem/Lw41nwx7/
+    canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx = canvas.getContext("2d");    
+    ctx.strokeStyle = "#fff";
+    ctx.lineJoin = 'round';
+    ctx.save(); 
+}
+
+function tick(){
+    if(mute && gnode.gain.value > 0){
+        gnode.gain.value -= 0.05; 
+    }else if(!mute && gnode.gain.value < MAX_GAIN){
+        gnode.gain.value += 0.05;
+    }
+
+    if(fade == 0 && graph_height >= 0){
+        graph_height  -= 0.2;
+    }else if(fade == 1 && graph_height <= 1){
+        graph_height += 0.2;
+    }
+
+    draw();
+    t += 1;
+    setTimeout(tick,TICK);
+}
+
+function draw(){
+    var h = canvas.height;
+    var w = canvas.width;
+    ctx.clearRect(0,0,w,h);
+
+    var mx = Math.max.apply(null,freqs);
+    
+    var gain = graph_height; //gnode.gain.value; 
+
+    // draw background waves
+    for(var i=0;i<freqs.length;i++){
+        //console.log("drawing "+freqs[i] + " as "+ (freqs[i]/mx));
+        ctx.save();
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0,canvas.height/2);
+        for(x=0; x<canvas.width; x++){
+            y = Math.sin( ((x-t)/(canvas.width/12)) * (Math.PI/(freqs[i]/mx)) * xpand );
+            ctx.lineTo(x,( gain*y*canvas.height/3 + canvas.height/2));
+        }
+        ctx.stroke();
+    }
+    
+    // draw composite wave
+    ctx.moveTo(0,canvas.height/2); 
+    ctx.strokeStyle = "#ddf";
+    ctx.beginPath();
+    for(var x=0;x<canvas.width; x++){
+        var y=0;
+        for( var i=0; i<freqs.length; i++){
+            y += Math.sin( ((x+t)/(canvas.width/12)) * (Math.PI/(freqs[i]/mx))  * xpand );
+        }
+        ctx.lineTo(x,( gain*(y/freqs.length)*canvas.height/3 + canvas.height/2 ) );
+    }
+    ctx.stroke();
+}
+
+function update_audio(){
+    for(var i=0; i<oscillators.length; i++){
+        oscillators[i].stop();
+        oscillators[i].disconnect();
+    }
+    for(var i=0;i<freqs.length; i++){
+        var osc = atx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.value = freqs[i];
+        osc.connect(gnode);
+        osc.start();
+        oscillators.push(osc);
+    }  
+}
 
 function update_chord(notes){
-    // TODO change audio
-    // TODO draw waves
+    chord = notes;
+    update_freqs();
+}
+
+function update_freqs(){
+    freqs = [];
+    for(var i=0; i<chord.length; i++){
+        freqs.push(FREQ[chord[i]]);
+    }
+    draw();
+    update_audio();
+}
+
+
+
+function walk_chords(){
+    // circle of fifths.. 
+    root = (root + 7) % SCALE.length;
+    console.log("new root" + SCALE[root]);
+    // build chord
+    var c = [];
+    for(var v=0; v<voicing.length; v++){
+        // TODO allow voicing to drop octave or raise octaves..
+        c.push(SCALE[(root+voicing[v])%SCALE.length]+octave);
+    }
+    console.log("transitioning to "+c);
+    update_chord(c);
+}
+
+function beat(){
+    // Count in sixteenth notes
+    beat_count = (beat_count + 1)%(MEASURE*4);
+    if(beat_count == ((MEASURE*4)-2)){
+        fade = 0;
+    }else if(beat_count == 0){
+        walk_chords();
+        fade = 1;
+    }
+    setTimeout(beat,BEAT/4);
 }
 
 function main(){
-    console.log(chord);
-
+    window.addEventListener("click",function(){
+        mute = !mute;
+    });
+    init_canvas();
+    init_audio();
+    update_freqs();
+    tick();
+    beat();
 }
 
 window.onload = main;
 
-// Pulled From http://www.phy.mtu.edu/~suits/notefreqs.html
-var FREQ = [
- {
-  "note": "C0", 
-  "fq": 16.35
- }, 
- {
-  "note": " C#0/Db0 ", 
-  "fq": 17.32
- }, 
- {
-  "note": "D0", 
-  "fq": 18.35
- }, 
- {
-  "note": " D#0/Eb0 ", 
-  "fq": 19.45
- }, 
- {
-  "note": "E0", 
-  "fq": 20.6
- }, 
- {
-  "note": "F0", 
-  "fq": 21.83
- }, 
- {
-  "note": " F#0/Gb0 ", 
-  "fq": 23.12
- }, 
- {
-  "note": "G0", 
-  "fq": 24.5
- }, 
- {
-  "note": " G#0/Ab0 ", 
-  "fq": 25.96
- }, 
- {
-  "note": "A0", 
-  "fq": 27.5
- }, 
- {
-  "note": " A#0/Bb0 ", 
-  "fq": 29.14
- }, 
- {
-  "note": "B0", 
-  "fq": 30.87
- }, 
- {
-  "note": "C1", 
-  "fq": 32.7
- }, 
- {
-  "note": " C#1/Db1 ", 
-  "fq": 34.65
- }, 
- {
-  "note": "D1", 
-  "fq": 36.71
- }, 
- {
-  "note": " D#1/Eb1 ", 
-  "fq": 38.89
- }, 
- {
-  "note": "E1", 
-  "fq": 41.2
- }, 
- {
-  "note": "F1", 
-  "fq": 43.65
- }, 
- {
-  "note": " F#1/Gb1 ", 
-  "fq": 46.25
- }, 
- {
-  "note": "G1", 
-  "fq": 49.0
- }, 
- {
-  "note": " G#1/Ab1 ", 
-  "fq": 51.91
- }, 
- {
-  "note": "A1", 
-  "fq": 55.0
- }, 
- {
-  "note": " A#1/Bb1 ", 
-  "fq": 58.27
- }, 
- {
-  "note": "B1", 
-  "fq": 61.74
- }, 
- {
-  "note": "C2", 
-  "fq": 65.41
- }, 
- {
-  "note": " C#2/Db2 ", 
-  "fq": 69.3
- }, 
- {
-  "note": "D2", 
-  "fq": 73.42
- }, 
- {
-  "note": " D#2/Eb2 ", 
-  "fq": 77.78
- }, 
- {
-  "note": "E2", 
-  "fq": 82.41
- }, 
- {
-  "note": "F2", 
-  "fq": 87.31
- }, 
- {
-  "note": " F#2/Gb2 ", 
-  "fq": 92.5
- }, 
- {
-  "note": "G2", 
-  "fq": 98.0
- }, 
- {
-  "note": " G#2/Ab2 ", 
-  "fq": 103.83
- }, 
- {
-  "note": "A2", 
-  "fq": 110.0
- }, 
- {
-  "note": " A#2/Bb2 ", 
-  "fq": 116.54
- }, 
- {
-  "note": "B2", 
-  "fq": 123.47
- }, 
- {
-  "note": "C3", 
-  "fq": 130.81
- }, 
- {
-  "note": " C#3/Db3 ", 
-  "fq": 138.59
- }, 
- {
-  "note": "D3", 
-  "fq": 146.83
- }, 
- {
-  "note": " D#3/Eb3 ", 
-  "fq": 155.56
- }, 
- {
-  "note": "E3", 
-  "fq": 164.81
- }, 
- {
-  "note": "F3", 
-  "fq": 174.61
- }, 
- {
-  "note": " F#3/Gb3 ", 
-  "fq": 185.0
- }, 
- {
-  "note": "G3", 
-  "fq": 196.0
- }, 
- {
-  "note": " G#3/Ab3 ", 
-  "fq": 207.65
- }, 
- {
-  "note": "A3", 
-  "fq": 220.0
- }, 
- {
-  "note": " A#3/Bb3 ", 
-  "fq": 233.08
- }, 
- {
-  "note": "B3", 
-  "fq": 246.94
- }, 
- {
-  "note": "C4", 
-  "fq": 261.63
- }, 
- {
-  "note": " C#4/Db4 ", 
-  "fq": 277.18
- }, 
- {
-  "note": "D4", 
-  "fq": 293.66
- }, 
- {
-  "note": " D#4/Eb4 ", 
-  "fq": 311.13
- }, 
- {
-  "note": "E4", 
-  "fq": 329.63
- }, 
- {
-  "note": "F4", 
-  "fq": 349.23
- }, 
- {
-  "note": " F#4/Gb4 ", 
-  "fq": 369.99
- }, 
- {
-  "note": "G4", 
-  "fq": 392.0
- }, 
- {
-  "note": " G#4/Ab4 ", 
-  "fq": 415.3
- }, 
- {
-  "note": "A4", 
-  "fq": 440.0
- }, 
- {
-  "note": " A#4/Bb4 ", 
-  "fq": 466.16
- }, 
- {
-  "note": "B4", 
-  "fq": 493.88
- }, 
- {
-  "note": "C5", 
-  "fq": 523.25
- }, 
- {
-  "note": " C#5/Db5 ", 
-  "fq": 554.37
- }, 
- {
-  "note": "D5", 
-  "fq": 587.33
- }, 
- {
-  "note": " D#5/Eb5 ", 
-  "fq": 622.25
- }, 
- {
-  "note": "E5", 
-  "fq": 659.25
- }, 
- {
-  "note": "F5", 
-  "fq": 698.46
- }, 
- {
-  "note": " F#5/Gb5 ", 
-  "fq": 739.99
- }, 
- {
-  "note": "G5", 
-  "fq": 783.99
- }, 
- {
-  "note": " G#5/Ab5 ", 
-  "fq": 830.61
- }, 
- {
-  "note": "A5", 
-  "fq": 880.0
- }, 
- {
-  "note": " A#5/Bb5 ", 
-  "fq": 932.33
- }, 
- {
-  "note": "B5", 
-  "fq": 987.77
- }, 
- {
-  "note": "C6", 
-  "fq": 1046.5
- }, 
- {
-  "note": " C#6/Db6 ", 
-  "fq": 1108.73
- }, 
- {
-  "note": "D6", 
-  "fq": 1174.66
- }, 
- {
-  "note": " D#6/Eb6 ", 
-  "fq": 1244.51
- }, 
- {
-  "note": "E6", 
-  "fq": 1318.51
- }, 
- {
-  "note": "F6", 
-  "fq": 1396.91
- }, 
- {
-  "note": " F#6/Gb6 ", 
-  "fq": 1479.98
- }, 
- {
-  "note": "G6", 
-  "fq": 1567.98
- }, 
- {
-  "note": " G#6/Ab6 ", 
-  "fq": 1661.22
- }, 
- {
-  "note": "A6", 
-  "fq": 1760.0
- }, 
- {
-  "note": " A#6/Bb6 ", 
-  "fq": 1864.66
- }, 
- {
-  "note": "B6", 
-  "fq": 1975.53
- }, 
- {
-  "note": "C7", 
-  "fq": 2093.0
- }, 
- {
-  "note": " C#7/Db7 ", 
-  "fq": 2217.46
- }, 
- {
-  "note": "D7", 
-  "fq": 2349.32
- }, 
- {
-  "note": " D#7/Eb7 ", 
-  "fq": 2489.02
- }, 
- {
-  "note": "E7", 
-  "fq": 2637.02
- }, 
- {
-  "note": "F7", 
-  "fq": 2793.83
- }, 
- {
-  "note": " F#7/Gb7 ", 
-  "fq": 2959.96
- }, 
- {
-  "note": "G7", 
-  "fq": 3135.96
- }, 
- {
-  "note": " G#7/Ab7 ", 
-  "fq": 3322.44
- }, 
- {
-  "note": "A7", 
-  "fq": 3520.0
- }, 
- {
-  "note": " A#7/Bb7 ", 
-  "fq": 3729.31
- }, 
- {
-  "note": "B7", 
-  "fq": 3951.07
- }, 
- {
-  "note": "C8", 
-  "fq": 4186.01
- }, 
- {
-  "note": " C#8/Db8 ", 
-  "fq": 4434.92
- }, 
- {
-  "note": "D8", 
-  "fq": 4698.63
- }, 
- {
-  "note": " D#8/Eb8 ", 
-  "fq": 4978.03
- }, 
- {
-  "note": "E8", 
-  "fq": 5274.04
- }, 
- {
-  "note": "F8", 
-  "fq": 5587.65
- }, 
- {
-  "note": " F#8/Gb8 ", 
-  "fq": 5919.91
- }, 
- {
-  "note": "G8", 
-  "fq": 6271.93
- }, 
- {
-  "note": " G#8/Ab8 ", 
-  "fq": 6644.88
- }, 
- {
-  "note": "A8", 
-  "fq": 7040.0
- }, 
- {
-  "note": " A#8/Bb8 ", 
-  "fq": 7458.62
- }, 
- {
-  "note": "B8", 
-  "fq": 7902.13
- }
-]
+// Audio freq table from http://www.phy.mtu.edu/~suits/notefreqs.html
+// A440
+
+var SCALE = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"];
+
+var FREQ = {
+ "A#4": 466.16, 
+ "C#8": 4434.92, 
+ "A#3": 233.08, 
+ "G7": 3135.96, 
+ "G6": 1567.98, 
+ "G5": 783.99, 
+ "G4": 392.0, 
+ "G3": 196.0, 
+ "G2": 98.0, 
+ "G1": 49.0, 
+ "G0": 24.5, 
+ "G8": 6271.93, 
+ "G#8": 6644.88, 
+ "F0": 21.83, 
+ "F#5": 739.99, 
+ "F#2": 92.5, 
+ "C#3": 138.59, 
+ "D#7": 2489.02, 
+ "G#3": 207.65, 
+ "G#6": 1661.22, 
+ "B4": 493.88, 
+ "B5": 987.77, 
+ "B6": 1975.53, 
+ "B7": 3951.07, 
+ "B0": 30.87, 
+ "B1": 61.74, 
+ "A#6": 1864.66, 
+ "B3": 246.94, 
+ "B8": 7902.13, 
+ "G#0": 25.96, 
+ "C#7": 2217.46, 
+ "F#8": 5919.91, 
+ "A#7": 3729.31, 
+ "A#5": 932.33, 
+ "G#5": 830.61, 
+ "E8": 5274.04, 
+ "G#1": 51.91, 
+ "E5": 659.25, 
+ "E4": 329.63, 
+ "E7": 2637.02, 
+ "E6": 1318.51, 
+ "E1": 41.2, 
+ "E0": 20.6, 
+ "E3": 164.81, 
+ "E2": 82.41, 
+ "D#2": 77.78, 
+ "B2": 123.47, 
+ "D#6": 1244.51, 
+ "C#2": 69.3, 
+ "G#2": 103.83, 
+ "F#7": 2959.96, 
+ "A#8": 7458.62, 
+ "C8": 4186.01, 
+ "D#0": 19.45, 
+ "C2": 65.41, 
+ "C1": 32.7, 
+ "C0": 16.35, 
+ "C7": 2093.0, 
+ "C6": 1046.5, 
+ "C5": 523.25, 
+ "C4": 261.63, 
+ "C#5": 554.37, 
+ "D#3": 155.56, 
+ "C3": 130.81, 
+ "A#1": 58.27, 
+ "D#4": 311.13, 
+ "A#2": 116.54, 
+ "F#0": 23.12, 
+ "F1": 43.65, 
+ "F2": 87.31, 
+ "F3": 174.61, 
+ "F4": 349.23, 
+ "F5": 698.46, 
+ "F6": 1396.91, 
+ "F7": 2793.83, 
+ "F8": 5587.65, 
+ "D#1": 38.89, 
+ "C#6": 1108.73, 
+ "C#4": 277.18, 
+ "A#0": 29.14, 
+ "F#6": 1479.98, 
+ "F#3": 185.0, 
+ "G#4": 415.3, 
+ "D#8": 4978.03, 
+ "A1": 55.0, 
+ "A0": 27.5, 
+ "A3": 220.0, 
+ "A2": 110.0, 
+ "A5": 880.0, 
+ "A4": 440.0, 
+ "A7": 3520.0, 
+ "A6": 1760.0, 
+ "A8": 7040.0, 
+ "C#0": 17.32, 
+ "D#5": 622.25, 
+ "F#1": 46.25, 
+ "F#4": 369.99, 
+ "C#1": 34.65, 
+ "G#7": 3322.44, 
+ "D8": 4698.63, 
+ "D6": 1174.66, 
+ "D7": 2349.32, 
+ "D4": 293.66, 
+ "D5": 587.33, 
+ "D2": 73.42, 
+ "D3": 146.83, 
+ "D0": 18.35, 
+ "D1": 36.71
+}
