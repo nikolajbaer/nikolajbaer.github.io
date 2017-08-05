@@ -3,16 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <style>
-        body { margin: 0px; overflow: hidden; padding: 0px; height: 100%; width: 100%; background-color: black; }
+        body { 
+            margin: 0px; 
+            overflow: hidden; 
+            padding: 0px; 
+            height: 100%; 
+            width: 100%; 
+            background-color: black; 
+            perspective: 800px;
+        }
         #arrow { 
             font-size: 144pt; color: blue;
             margin: 100px auto; 
             text-align: center;
         }
-        #msg {
+        p {
             margin: 10px auto;
             color: #eee;
             text-align: center;
+            font: sans-serif;
         }
     </style>
 
@@ -22,6 +31,7 @@
 
 <div id="arrow">↑</div>
 <p id="msg">requesting geo location..</p>
+<p id="debug"></p>
 <script src="gyronorm.complete.min.js" ></script>
 <script src="app.js" ></script>
 </body>

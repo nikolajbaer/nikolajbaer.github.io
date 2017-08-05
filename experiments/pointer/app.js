@@ -37,11 +37,12 @@ function distance_and_bearing(p1,p2){
 }
 
 function align_arrow(){
+    if(my_coords == null) { return; } 
     var logo = document.getElementById("arrow");
 
     var beardist = distance_and_bearing(my_coords,ROME);
 
-    console.log(my_coords,ROME,beardist);
+    //console.log(my_coords,ROME,beardist);
     document.getElementById("msg").innerHTML = "" + (Math.round(beardist.distance/1000) +"km to Rome");
 
     if(my_orient != null){
@@ -50,7 +51,7 @@ function align_arrow(){
             "rotate("+ beardist.bearing +"deg) rotate3d(1,0,0, "+ (my_orient.pitch*-1)+"deg)";
     }else{
         logo.style.transform =
-            "rotate("+ beardist.bearing +"deg)"; 
+            "rotate("+ beardist.bearing +"deg) rotate3d(1,0,0, "+ (pitch*-1)+"deg)";
     }
 }
 
@@ -70,14 +71,20 @@ function main(){
     var gn = new GyroNorm();     
     gn.init({frequency:1000}).then(function(){
         gn.start(function(data){
-            var roll = data.gamma;
-            var pitch = data.beta;
-            var yaw = data.alpha             
+            document.getElementById("debug").innerHTML = "<code>"+JSON.stringify(data)+"</code>";
+            var roll = data.dm.gamma;
+            var pitch = data.dm.beta;
+            var yaw = data.dm.alpha             
 
-            //document.getElementById("msg").innerHTML = "<code>"+JSON.stringify(data)+"</code>";
+            if(roll == 0 && pitch == 0 && yaw == 0){
+                //TODO explicit indication of no sensor data
+            }else{
+                my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
+                align_arrow();
+            }
         });
     }).catch(function(e){
-        console.log("DeviceOrientation or DeviceMotion is not supported by the browser or device",e);
+        alert("DeviceOrientation or DeviceMotion is not supported by the browser or device",e);
     });
 }
 
