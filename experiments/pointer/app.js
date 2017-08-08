@@ -54,7 +54,7 @@ function align_arrow(){
     var yaw = beardist.bearing; // TODO factor in current gyro yaw
     var pitch = 50; //default forward pitch 
     if(my_orient != null){
-        yaw -= my_orient.yaw;
+        yaw += my_orient.yaw;
         pitch = my_orient.pitch;
     }
     
