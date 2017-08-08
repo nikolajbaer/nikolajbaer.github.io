@@ -75,19 +75,15 @@ function main(){
     }
     
     var gn = new GyroNorm();     
-    gn.init({frequency:1000}).then(function(){
+    gn.init({frequency:100}).then(function(){
         gn.start(function(data){
-            document.getElementById("debug").innerHTML = "<code>"+JSON.stringify(data)+"</code>";
+            //document.getElementById("debug").innerHTML = "<code>"+JSON.stringify(data)+"</code>";
             var roll = data.do.gamma;
             var pitch = data.do.beta;
             var yaw = data.do.alpha             
 
-            if(roll == 0 && pitch == 0 && yaw == 0){
-                //TODO explicit indication of no sensor data
-            }else{
-                my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
-                align_arrow();
-            }
+            my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
+            align_arrow();
         });
     }).catch(function(e){
         alert("DeviceOrientation or DeviceMotion is not supported by the browser or device",e);
