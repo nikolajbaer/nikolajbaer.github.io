@@ -8,6 +8,11 @@ var my_orient = null;
 function radians(d){ return d * (Math.PI/ 180); }
 function degrees(d){ return d/(Math.PI/180); }
 
+function sms_share_url(){
+    // from https://stackoverflow.com/questions/6480462/how-to-pre-populate-the-sms-body-text-via-an-html-link
+    return "sms:?&body="+window.location;
+}
+
 // http://www.movable-type.co.uk/scripts/latlong.html
 function distance_and_bearing(p1,p2){
 
@@ -45,14 +50,15 @@ function align_arrow(){
     //console.log(my_coords,ROME,beardist);
     document.getElementById("msg").innerHTML = "" + (Math.round(beardist.distance/1000) +"km to Rome");
 
+    // rotate X axis for pitch, and z axis for bearing (yaw) 
+    var yaw = beardist.bearing; // TODO factor in current gyro yaw
+    var pitch = 45; //default forward pitch 
     if(my_orient != null){
-        // TODO think about how this translates
-        logo.style.transform =
-            "rotate("+ beardist.bearing +"deg) rotate3d(1,0,0, "+ (my_orient.pitch*-1)+"deg)";
-    }else{
-        logo.style.transform =
-            "rotate("+ beardist.bearing +"deg) rotate3d(1,0,0, "+ (pitch*-1)+"deg)";
+        yaw -= my_orient.yaw;
+        pitch = my_orient.pitch;
     }
+    
+    logo.style.transform = "rotate3d(1,0,0, "+ pitch +"deg) rotate3d(0,0,1,"+ yaw +"deg) ";
 }
 
 function main(){
