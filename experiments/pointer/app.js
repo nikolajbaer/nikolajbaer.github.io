@@ -52,7 +52,7 @@ function align_arrow(){
 
     // rotate X axis for pitch, and z axis for bearing (yaw) 
     var yaw = beardist.bearing; // TODO factor in current gyro yaw
-    var pitch = 45; //default forward pitch 
+    var pitch = 50; //default forward pitch 
     if(my_orient != null){
         yaw -= my_orient.yaw;
         pitch = my_orient.pitch;
@@ -82,7 +82,11 @@ function main(){
             var pitch = data.do.beta;
             var yaw = data.do.alpha             
 
-            my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
+            if(pitch == 0 && roll == 0 && yaw == 0){
+                my_orient = null; // we probably didn't get a reading..
+            }else{
+                my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
+            }
             align_arrow();
         });
     }).catch(function(e){
