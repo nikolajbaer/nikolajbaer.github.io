@@ -78,9 +78,9 @@ function main(){
     gn.init({frequency:1000}).then(function(){
         gn.start(function(data){
             document.getElementById("debug").innerHTML = "<code>"+JSON.stringify(data)+"</code>";
-            var roll = data.dm.gamma;
-            var pitch = data.dm.beta;
-            var yaw = data.dm.alpha             
+            var roll = data.do.gamma;
+            var pitch = data.do.beta;
+            var yaw = data.do.alpha             
 
             if(roll == 0 && pitch == 0 && yaw == 0){
                 //TODO explicit indication of no sensor data
