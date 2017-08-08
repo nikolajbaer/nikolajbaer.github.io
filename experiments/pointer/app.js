@@ -1,6 +1,7 @@
 // https://github.com/dorukeker/gyronorm.js
 
-var ROME = {latitude:41.8921636,longitude:12.4844232,altitude:21}; 
+var TARGET = null; 
+var TARGET_NAME = null;
 var geoWatchId = null;
 var my_coords = null;
 var my_orient = null;
@@ -45,10 +46,9 @@ function align_arrow(){
     if(my_coords == null) { return; } 
     var logo = document.getElementById("arrow");
 
-    var beardist = distance_and_bearing(my_coords,ROME);
+    var beardist = distance_and_bearing(my_coords,TARGET);
 
-    //console.log(my_coords,ROME,beardist);
-    document.getElementById("msg").innerHTML = "" + (Math.round(beardist.distance/1000) +"km to Rome");
+    document.getElementById("msg").innerHTML = "" + (Math.round(beardist.distance/1000) +"km to " + TARGET_NAME);
 
     // rotate X axis for pitch, and z axis for bearing (yaw) 
     var yaw = beardist.bearing; // TODO factor in current gyro yaw
@@ -73,25 +73,33 @@ function main(){
     }else{
         alert("geolocation not available");
     }
-    
-    var gn = new GyroNorm();     
-    gn.init({frequency:100}).then(function(){
-        gn.start(function(data){
-            //document.getElementById("debug").innerHTML = "<code>"+JSON.stringify(data)+"</code>";
-            var roll = data.do.gamma;
-            var pitch = data.do.beta;
-            var yaw = data.do.alpha             
 
-            if(pitch == 0 && roll == 0 && yaw == 0){
-                my_orient = null; // we probably didn't get a reading..
-            }else{
-                my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
-            }
-            align_arrow();
-        });
-    }).catch(function(e){
-        alert("DeviceOrientation or DeviceMotion is not supported by the browser or device",e);
+    window.addEventListener('deviceorientation', handleOrientation); 
+
+    document.querySelectorAll("#locations li").forEach(function(el,i,l){ 
+        el.addEventListener("click",function(){ set_target(el) }); 
     });
+    set_target(document.querySelector("#locations li"));
+}
+
+function set_target(el){
+    TARGET = {latitude:Number(el.dataset.lat), longitude: Number(el.dataset.lng)};
+    TARGET_NAME = el.innerHTML;
+    console.log("Targeting "+TARGET_NAME);
+    align_arrow();
+}
+
+function handleOrientation(event) {
+    var roll = event.gamma;
+    var pitch = event.beta;
+    var yaw = event.alpha             
+
+    if(pitch == 0 && roll == 0 && yaw == 0){
+        my_orient = null; // we probably didn't get a reading..
+    }else{
+        my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
+    }
+    align_arrow();
 }
 
 main();

@@ -11,6 +11,8 @@
             width: 100%; 
             background-color: black; 
             perspective: 800px;
+            font-family: sans-serif;
+            color: #aaa;
         }
         #arrow { 
             width: 200px;
@@ -18,26 +20,42 @@
             padding: 10px;
             border: solid 1px #aaa;
             font-size: 144pt;
-            color: #aaa;
             margin: 100px auto; 
             text-align: center;
+            transition: transform 0.2s;
         }
         p {
             margin: 10px auto;
-            color: #eee;
             text-align: center;
-            font-family: sans-serif;
+            font-size: 24pt;
         }
+        #locations {
+            float: left;
+            font-size: 10pt;
+            list-style: none;
+        }
+        #locations li {
+            cursor: pointer;
+        } 
+
     </style>
 
 </head>
 <body>
+<ul id="locations">
+    <li data-lat="34.0207504" data-lng="-118.691922" data-alt="21">Los Angeles</li>
+    <li data-lat="40.7058316" data-lng="-74.2581898" data-alt="21">New York</li>
+    <li data-lat="51.5287718" data-lng="-0.2417012" data-alt="21">London</li>
+    <li data-lat="41.8921636" data-lng="12.4844232" data-alt="21">Rome</li>
+    <li data-lat="55.7498598" data-lng="37.3523175" data-alt="21">Moscow</li>
+    <li data-lat="22.2445557" data-lng="114.1510467" data-alt="21">Hong Kong</li>
+    <li data-lat="35.6735408" data-lng="139.570303" data-alt="21">Tokyo</li>
+</ul>
 
 <div id="arrow">↑</div>
 
 <p id="msg">requesting geo location..</p>
 <p id="debug"></p>
-<script src="gyronorm.complete.min.js" ></script>
 <script src="app.js" ></script>
 </body>
 </html>
