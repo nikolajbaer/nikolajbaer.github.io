@@ -14,14 +14,19 @@
             font-family: sans-serif;
             color: #aaa;
         }
-        #arrow { 
+        #compass { 
+            position:relative;
             width: 200px;
             height: 200px;
             padding: 10px;
             border: solid 1px #aaa;
-            font-size: 144pt;
             margin: 100px auto; 
             text-align: center;
+            transition: transform 0.2s;
+        }
+        #arrow {
+            font-size: 144pt;
+            color: white;
             transition: transform 0.2s;
         }
         p {
@@ -37,7 +42,7 @@
         #locations li {
             cursor: pointer;
         } 
-
+        #compass span { text-align: center; width: 100%; }
     </style>
 
 </head>
@@ -52,7 +57,10 @@
     <li data-lat="35.6735408" data-lng="139.570303" data-alt="21">Tokyo</li>
 </ul>
 
-<div id="arrow">↑</div>
+<div id="compass">
+    <span>north</span>
+    <div id="arrow">↑</div>
+</div>
 
 <p id="msg">requesting geo location..</p>
 <p id="debug"></p>

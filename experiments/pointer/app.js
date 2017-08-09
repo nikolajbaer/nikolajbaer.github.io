@@ -16,7 +16,7 @@ function sms_share_url(){
 
 // http://www.movable-type.co.uk/scripts/latlong.html
 function distance_and_bearing(p1,p2){
-
+    
     // haversine distance
     var R = 6371000; // earth's radius in m
     var phi1 = radians(p1.latitude);
@@ -33,10 +33,15 @@ function distance_and_bearing(p1,p2){
     var distance = R * c;
    
     // bearing 
-    var y = Math.sin(p2.longitude - p1.longitude) * Math.cos(p2.latitude);
-    var x = Math.cos(p1.latitude) * Math.sin(p2.latitude) -
-            Math.sin(p1.latitude) * Math.cos(p2.latitude) * 
-            Math.cos(p2.longitude - p1.longitude);
+    var lam1 = radians(p1.longitude);
+    var lam2 = radians(p2.longitude);
+    var phi1 = radians(p1.latitude);
+    var phi2 = radians(p2.latitude);
+
+    var y = Math.sin(lam2 - lam1) * Math.cos(phi2);
+    var x = Math.cos(phi1) * Math.sin(phi2) -
+            Math.sin(phi1) * Math.cos(phi2) * 
+            Math.cos(lam2 - lam1);
     var bearing = degrees(Math.atan2(y, x));
 
     return {bearing:bearing,distance:distance};
@@ -44,21 +49,25 @@ function distance_and_bearing(p1,p2){
 
 function align_arrow(){
     if(my_coords == null) { return; } 
-    var logo = document.getElementById("arrow");
+    var compass = document.getElementById("compass");
+    var arrow = document.getElementById("arrow");
 
     var beardist = distance_and_bearing(my_coords,TARGET);
 
-    document.getElementById("msg").innerHTML = "" + (Math.round(beardist.distance/1000) +"km to " + TARGET_NAME);
+    document.getElementById("msg").innerHTML = "" + (Math.round(beardist.distance/1000) +"km to " + TARGET_NAME +
+                                                     "( bearing "+Math.round(beardist.bearing)+"&deg; )");
 
     // rotate X axis for pitch, and z axis for bearing (yaw) 
-    var yaw = beardist.bearing; // TODO factor in current gyro yaw
+    var bearing = beardist.bearing;
+    var yaw = 0; // TODO factor in current gyro yaw
     var pitch = 50; //default forward pitch 
     if(my_orient != null){
-        yaw += my_orient.yaw;
+        yaw = my_orient.yaw;
         pitch = my_orient.pitch;
     }
     
-    logo.style.transform = "rotate3d(1,0,0, "+ pitch +"deg) rotate3d(0,0,1,"+ yaw +"deg) ";
+    compass.style.transform = "rotate3d(1,0,0, "+ pitch +"deg) rotate3d(0,0,1,"+ (yaw) +"deg) ";
+    arrow.style.transform = "rotate("+ (bearing) +"deg) ";
 }
 
 function main(){
