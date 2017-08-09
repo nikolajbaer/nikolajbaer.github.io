@@ -72,6 +72,7 @@ function align_arrow(){
 
 function main(){
 
+    // Request and retrieve geolocation from system
     if("geolocation" in navigator){
        geoWatchId = navigator.geolocation.watchPosition(function(position) {
             my_coords = position.coords;
@@ -80,11 +81,19 @@ function main(){
             alert(failure.message);
         }); 
     }else{
-        alert("geolocation not available");
+        alert("Geolocation not available, please refresh and allow to continue!");
     }
 
-    window.addEventListener('deviceorientation', handleOrientation); 
+    // Not consistent, using gyronorm for now
+    //window.addEventListener('deviceorientation', handleOrientation); 
+    // Use Gyronorm library to get consistent readings
+    // We need to make sure we are earth-absolute
+    var gn = new GyroNorm();
+    gn.init().then(function(){
+        gn.start(handleGyroNormData);
+    });
 
+    // Associate targeting location list
     document.querySelectorAll("#locations li").forEach(function(el,i,l){ 
         el.addEventListener("click",function(){ set_target(el) }); 
     });
@@ -98,6 +107,22 @@ function set_target(el){
     align_arrow();
 }
 
+
+// For gyronorm.js data
+function handleGyroNormData(data){
+    var roll = data.do.gamma;
+    var pitch = data.do.beta;
+    var yaw = data.do.alpha
+
+    if(pitch == 0 && roll == 0 && yaw == 0){
+        my_orient = null; // we probably didn't get a reading..
+    }else{
+        my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
+    }
+    align_arrow();
+}
+
+// For native DeviceOrientation
 function handleOrientation(event) {
     var roll = event.gamma;
     var pitch = event.beta;
