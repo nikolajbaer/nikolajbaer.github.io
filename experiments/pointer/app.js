@@ -88,7 +88,7 @@ function main(){
     //window.addEventListener('deviceorientation', handleOrientation); 
     // Use Gyronorm library to get consistent readings
     // We need to make sure we are earth-absolute
-    var gn = new GyroNorm();
+    var gn = new GyroNorm({orientationBase:GyroNorm.WORLD});
     gn.init().then(function(){
         gn.start(handleGyroNormData);
     });
