@@ -113,6 +113,11 @@ function handleGyroNormData(data){
     var roll = data.do.gamma;
     var pitch = data.do.beta;
     var yaw = data.do.alpha
+    if(!data.do.absolute){
+        document.getElementById("north").innerHTML = "north*";
+    }else{
+        document.getElementById("north").innerHTML = "north";
+    }
 
     if(pitch == 0 && roll == 0 && yaw == 0){
         my_orient = null; // we probably didn't get a reading..
