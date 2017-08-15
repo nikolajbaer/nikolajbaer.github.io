@@ -1,0 +1,68 @@
+<html>
+<head>
+    <style>
+        /* keyframes */
+        @keyframes pulse {
+            0% {
+                opacity: 0.0; 
+            }
+            50% { 
+                opacity: 1.0;
+            }
+            100% { 
+                opacity: 0.0;
+            }
+        }
+        body { 
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+            background: linear-gradient(0deg,#333,#eee);
+        }
+        .full {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+        }    
+        #bg {
+            opacity: 0.0;
+            background: linear-gradient(90deg,#ff00ff,#00ff00);
+            animation-name: pulse;
+            animation-duration: 30s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+        #mg {
+            opacity: 0.0;
+            background: linear-gradient(120deg,yellow,orange);
+            animation-name: pulse;
+            animation-delay: 10s;
+            animation-duration: 17s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+        #fg {
+            opacity: 0.0;
+            background: linear-gradient(45deg,red,blue);
+
+            animation-name: pulse;
+            animation-duration: 20s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+
+         
+    </style>
+</head>
+<body>
+    <div class="full" id="bg">
+    </div>
+    <div class="full" id="mg">
+    </div>
+    <div class="full" id="fg">
+    </div>
+</body>
+</html>
