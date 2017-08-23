@@ -85,14 +85,14 @@ function main(){
     }
 
     // Not consistent, using gyronorm for now
-    //window.addEventListener('deviceorientation', handleOrientation); 
-    // Use Gyronorm library to get consistent readings
-    // We need to make sure we are earth-absolute
-    var args = {orientationBase:GyroNorm.WORLD};
-    var gn = new GyroNorm();
-    gn.init(args).then(function(){
-        gn.start(handleGyroNormData);
-    });
+    // https://developers.google.com/web/updates/2016/03/device-orientation-changes
+    // TODO safari
+    if('ondeviceorientationabsolute' in window){
+        console.log("regisering orientation event");
+        window.addEventListener('deviceorientationabsolute', handleOrientation); 
+    }else{
+        console.log("no absolute device orientation in window");
+    }
 
     // Associate targeting location list
     document.querySelectorAll("#locations li").forEach(function(el,i,l){ 
@@ -108,33 +108,14 @@ function set_target(el){
     align_arrow();
 }
 
-
-// For gyronorm.js data
-function handleGyroNormData(data){
-    var roll = data.do.gamma;
-    var pitch = data.do.beta;
-    var yaw = data.do.alpha
-    if(!data.do.absolute){
-        document.getElementById("north").innerHTML = "north*";
-    }else{
-        document.getElementById("north").innerHTML = "north";
-    }
-
-    if(pitch == 0 && roll == 0 && yaw == 0){
-        my_orient = null; // we probably didn't get a reading..
-    }else{
-        my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
-    }
-    align_arrow();
-}
-
-// For native DeviceOrientation
+// For native DeviceOrientationAbsolute
 function handleOrientation(event) {
+    console.log(event);     
     var roll = event.gamma;
     var pitch = event.beta;
     var yaw = event.alpha             
-
-    if(pitch == 0 && roll == 0 && yaw == 0){
+    
+    if(pitch == null || (pitch == 0 && roll == 0 && yaw == 0)){
         my_orient = null; // we probably didn't get a reading..
     }else{
         my_orient =  {pitch:pitch,roll:roll,yaw:yaw};
