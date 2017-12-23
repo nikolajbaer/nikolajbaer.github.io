@@ -1,8 +1,9 @@
 var renderer, scene, camera, workPlane, cursor, controls;
 var beast, blocks;
 var raycaster;
+var t = 0;
 var mouse = new THREE.Vector2();
-
+var UP = new THREE.Vector3(0,1,0);
 var rotateY = new THREE.Matrix4().makeRotationY( 0.001 );
 var threshold = 0.1;
 
@@ -55,23 +56,45 @@ function init() {
     cursor = new THREE.Points( points,pointMaterial);
     scene.add( cursor ); 
 
-    var beastGeometry = new THREE.BoxGeometry( 1,1,1 );
+   
+    var manager = new THREE.LoadingManager(); 
+    var loader = new THREE.OBJLoader( manager );
+    loader.load( 'assets/trog.obj', function ( object ) {
+        console.log(object);
+        beast = new THREE.Group();
+        beast.castShadow = true;
+        var head = object.children[1];
+        beast.add(head);
+        head.material = beastMaterial;
+        var section = object.children[0];        
+        var last = head;
+        for(var i=0; i<30; i++){
+            var s = new THREE.Mesh( section.geometry, beastMaterial);
+            s.scale.multiplyScalar(1.0 - (i/50));
+            s.position.z -= 0.1 + i*0.1;  
+            last.add(s); 
+            last = s;
+        }
+        head.position.y = 0;
+        scene.add( beast );
+    }, function(e){ console.log(e); },function(e){ console.log(e); } );
+
     var beastMaterial = new THREE.MeshPhongMaterial( {
                     color: 0xDADCC0,
                     emissive: 0x072534,
                     side: THREE.DoubleSide,
-                    flatShading: true
+                    shininess: 0
                 } )
-    beast = new THREE.Mesh(beastGeometry,beastMaterial);
-    beast.position.y = 0.5;
-    scene.add(beast);
 
     var controls = new THREE.OrbitControls( camera, renderer.domElement );
 
     window.addEventListener( 'resize', onWindowResize, false );
     document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
+    window.setInterval(update, 1.0/30.0);
 }
+
+
 
 function onDocumentMouseMove( event ) {
     event.preventDefault();
@@ -83,6 +106,32 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+function beastMove(){
+    var b = beast.children[0];
+    if(cursor.visible){
+        var qm = new THREE.Quaternion();
+        var m1 = new THREE.Matrix4(); 
+        var v = new THREE.Vector3(); 
+        v.copy( beast.position );
+        v.sub( cursor.position );
+        m1.lookAt( beast.position, v, UP );
+        b.quaternion.setFromRotationMatrix( m1 );
+;    }
+
+    // and the tail
+    while(b.children.length > 0){
+        b.children[0].quaternion.slerp( b.quaternion,0.05 );
+        b = b.children[0];
+    }
+}
+
+function update(){
+    t += 1;
+    if(beast != null ){    
+        beastMove();
+    }
 }
 
 function animate() {
