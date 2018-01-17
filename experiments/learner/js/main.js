@@ -1,5 +1,5 @@
 var renderer, scene, camera, workPlane, cursor, controls;
-var beast, blocks;
+var beast, blocks, brain;
 var raycaster;
 var t = 0;
 var mouse = new THREE.Vector2();
@@ -65,6 +65,11 @@ function init() {
         beast.castShadow = true;
         var head = object.children[1];
         beast.add(head);
+        
+        brain = Learner();
+        brain.init(5,3);
+        beast.brain = brain;
+
         head.material = beastMaterial;
         var section = object.children[0];        
         var last = head;
@@ -110,6 +115,11 @@ function onWindowResize() {
 
 function beastMove(){
     var b = beast.children[0];
+
+    // TODO figure out how to iterate this.
+    var result = beast.brain.sense( [0,0,0] ); 
+    // beast.brain.learn( [some reward data?] );
+
     if(cursor.visible){
         var qm = new THREE.Quaternion();
         var m1 = new THREE.Matrix4(); 
@@ -118,7 +128,7 @@ function beastMove(){
         v.sub( cursor.position );
         m1.lookAt( beast.position, v, UP );
         b.quaternion.setFromRotationMatrix( m1 );
-;    }
+    }
 
     // and the tail
     while(b.children.length > 0){
