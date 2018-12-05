@@ -38,7 +38,7 @@ function v(){
     animate(0);
 }
 
-window.onload = v;
+//window.onload = v;
 
 
 /* resize handling */

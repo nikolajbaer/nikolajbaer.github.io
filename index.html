@@ -1,64 +1,65 @@
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:og="http://ogp.me/ns#"
-      xmlns:fb="http://www.facebook.com/2008/fbml">
+<!doctype html>
+<html lang="en">
 <head>
-    <!-- Meta -->
-    <title>Nikolaj Baer .us</title>
-    <meta name="ROBOTS" content="ALL" />
-    <meta http-equiv="imagetoolbar" content="no" />
-    <meta name="Copyright" content="This site's design and contents Copyright (c) 2011+  Nikolaj Baer." />
-    <meta name="keywords" content="Nikolaj Baer" />
-    <meta name="description" content="tired of old site; no interest in blogging; just enough is right" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nikolaj Baer</title>
+  <meta name="description" content="Software Developer in San Diego." >
+  <link rel="shortcut icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="bundle-home.css">
 
-    <!-- Opengraph -->
-    <meta property="og:title" content="Nikolaj Baer" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="http://www.nikolajbaer.us/" />
-    <meta property="og:image" content="http://www.nikolajbaer.us/og.png" />
-    <meta property="og:site_name" content="Nikolaj Baer . US" />
-    <meta property="fb:admins" content="534965786" />
-
-    <!-- Scripts -->
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-    <script type="text/javascript" src="js/fun.js"></script>
-    <script type="text/javascript" src="js/game.js"></script>
-    <!--<script type="text/javascript" src="js/demobase.js"></script>-->
-
-    <!-- Styles -->
-    <link href="css/main.css" rel="stylesheet" type="text/css" media="screen" />
-    <style type="text/css">
-        body {
-            cursor: crosshair;
-            font-family: Arial, sans-serif;
-            font-size: 8pt;
-        }
-        a {
-            color: #eee;
-            text-decoration: none;
-        }
-        a:hover {
-            color: #fff;
-        }
-        #info {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            color: #fff;
-            font-family: sans-serif;
-        }
-    </style>
 </head>
+
 <body>
-<canvas id="thecanvas"></canvas>
-<div id="info">
-   <div id="hitrate"></div>
-   <p><a href="http://github.com/nikolajbaer">github</a> <a href="http://blog.nikolajbaer.us">blog</a> <a href="http://cukerinteractive.com">work</a> <a href="http://twitter.com/nikolajb">twitter</a> <a href="http://www.thingiverse.com/nikolajbaer/about">thingiverse</a></p>
-   <div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#appId=189607021097774&amp;xfbml=1"></script><fb:like href="http://www.nikolajbaer.us/" send="true" layout="button_count" width="250" show_faces="false" colorscheme="dark" font=""></fb:like> 
-</div>
+  <canvas id="canvas"></canvas>
+
+  <section class="main">
+    <h1>Nikolaj Baer</h1>
+    <ul class="links">
+        <li><a href="https://www.nikolajbaer.us/"><i class="fas fa-home"></i></a></li>
+        <li><a href="https://github.com/nikolajbaer/"><i class="fab fa-github"></i></a></li>
+        <li><a href="https://linkedin.com/in/nikolajbaer/"><i class="fab fa-linkedin"></i></a></li>
+        <li><a href="https://twitter.com/nikolajb"><i class="fab fa-twitter"></i></a></li>
+        <li><a href="https://stackoverflow.com/users/616950/nikolaj-baer"><i class="fab fa-stack-overflow"></i></a></li>
+    </ul>
+    <p>Software Developer located in <a href="https://www.openstreetmap.org/relation/253832">San Diego, CA</a>. </p>
+    <p>Tools: <a href="https://www.python.org">Python</a>, <a href="https://www.djangoproject.com">Django</a>, <a href="https://aws.amazon.com">AWS</a>, <a href="https://www.vim.org/">vim</a>, <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a></p>
+  </section>
+
 <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
 <script type="text/javascript">
 _uacct = "UA-797423-1";
 urchinTracker();
 </script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Person",
+  "name": "Nikolaj Baer",
+  "alumniOf": {
+    "@type":"Educational Organization",
+    "url": "https://www.rit.edu/",
+  },
+  "disambiguatingDescription": "Software Developer in San Diego, CA",
+  
+}
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/three.js/99/three.min.js"></script>
+<script type="glsl/text" id="fragment_shader">
+uniform vec2 u_resolution;
+uniform float u_time;
+
+void main() {
+    /* W.I.P. */
+    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
+    float v = ( sin(uv.x - sin(u_time)) * sin(uv.y - cos(u_time) ) ) * 0.05 + 0.95;
+    gl_FragColor = vec4(v,v,v,1.0);
+}
+
+</script>
+<script src="bundle-home.js"></script>
 </body>
 </html>
