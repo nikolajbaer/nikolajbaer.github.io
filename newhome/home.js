@@ -4,11 +4,11 @@ var ColladaLoader = require('three-collada-loader');
 var renderer;
 var camera;
 var uniforms;
-var toaster;
+var toaster_bot;
 
 function v(){
     var scene = new THREE.Scene();
-    var light = new THREE.AmbientLight( 0x404040 ); // soft white light
+    var light = new THREE.AmbientLight( 0xeeeeee ); // soft white light
     scene.add( light );
 
     uniforms = {
@@ -27,23 +27,44 @@ function v(){
 
     var loader = new ColladaLoader();
     loader.load( 'toasterbot.dae', function ( collada ) {
-        console.log(collada.scene.children[0]);
-        toaster = collada.scene.children[0]
-        var cube = new THREE.Mesh(new THREE.CubeGeometry(1,1,1), new THREE.MeshBasicMaterial({ color: "red"}));
-        //scene.add(cube);
-        toaster.children[0].material = new THREE.MeshBasicMaterial({color: "white"});
-        var edges = new THREE.EdgesGeometry( toaster.children[0].geometry, 80  );
-        var line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
-        toaster.children[0].add( line );
+        console.log("scene",collada.scene); 
+        toaster_bot = new THREE.Object3D();
 
-        var outlineMaterial1 = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
-	    var outlineMesh1 = new THREE.Mesh( toaster.children[0].geometry, outlineMaterial1 );
-	    outlineMesh1.scale.multiplyScalar(1.05);
-	    toaster.children[0].add( outlineMesh1 );
+        var toaster_mat = new THREE.MeshBasicMaterial({color: "white"});
+        var line_mat =  new THREE.LineBasicMaterial( { color: 0x000000 } );
+        var outline_mat = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
 
-        toaster.rotation.x = -Math.PI/2;
-        toaster.scale.multiplyScalar(0.5);
-        scene.add(toaster);
+        function update_material(obj){
+            //obj.children[0].material = toaster_mat;
+            //var edges = new THREE.EdgesGeometry( obj.children[0].geometry, 80  );
+            //var line = new THREE.LineSegments( edges,line_mat );
+            //obj.add(line);
+
+            // add outline
+    	    var outlineMesh1 = new THREE.Mesh( obj.children[0].geometry, outline_mat );
+    	    outlineMesh1.scale.multiplyScalar(1.05);
+    	    obj.add( outlineMesh1 );
+        }
+
+
+        function handle_obj(item){
+            update_material(item);
+        }
+
+        var objs = [];
+        collada.scene.children.forEach(function(item){
+            console.log(item.name,item.type);
+            handle_obj(item);
+            objs.push(item);
+        });
+    
+        objs.forEach(function(o){ toaster_bot.add(o); });
+         
+
+        toaster_bot.rotation.x = -Math.PI/2;
+        toaster_bot.scale.multiplyScalar(0.5);
+        scene.add(toaster_bot);
+        window.scene = scene;
     });
   
 //    camera = new THREE.Camera();
@@ -55,15 +76,16 @@ function v(){
 
 //    scene.add(mesh);
     camera.position.z = 5;
-    camera.position.y = 1;
+    camera.position.y = 0;
     window.camera = camera;
     
     function animate(now) {
     	requestAnimationFrame( animate );
         uniforms.u_time.value = clock.getElapsedTime();
     	renderer.render( scene, camera );
-        if(toaster){
-            toaster.rotation.z += 0.005;
+        if(toaster_bot){
+            toaster_bot.rotation.z += 0.005;
+            //toaster_bot.rotation.x += 0.001;
         }
     }
     animate(0);
