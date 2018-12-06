@@ -19,5 +19,7 @@
     "webpack-dev-server": "^2.4.3"
   },
   "dependencies": {
+    "three": "^0.99.0",
+    "three-collada-loader": "0.0.1"
   }
 }
