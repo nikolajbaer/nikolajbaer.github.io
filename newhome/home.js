@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-var ColladaLoader = require('three-collada-loader');
+//var ColladaLoader = require('three-collada-loader');
+var ColladaLoader = require("./ColladaLoader.js");
+var EffectComposer = require('three-effectcomposer')(THREE)
 
 var renderer;
 var camera;
@@ -29,52 +31,12 @@ function v(){
     loader.load( 'toasterbot.dae', function ( collada ) {
         console.log("scene",collada.scene); 
         toaster_bot = new THREE.Object3D();
-
-        var toaster_mat = new THREE.MeshBasicMaterial({color: "white"});
-        var line_mat =  new THREE.LineBasicMaterial( { color: 0x000000 } );
-        var outline_mat = new THREE.MeshBasicMaterial( { color: 0x000000, side: THREE.BackSide } );
-
-        function update_material(obj){
-            //obj.children[0].material = toaster_mat;
-            //var edges = new THREE.EdgesGeometry( obj.children[0].geometry, 80  );
-            //var line = new THREE.LineSegments( edges,line_mat );
-            //obj.add(line);
-
-            // add outline
-    	    var outlineMesh1 = new THREE.Mesh( obj.children[0].geometry, outline_mat );
-    	    outlineMesh1.scale.multiplyScalar(1.05);
-    	    obj.add( outlineMesh1 );
-        }
-
-
-        function handle_obj(item){
-            update_material(item);
-        }
-
-        var objs = [];
-        collada.scene.children.forEach(function(item){
-            console.log(item.name,item.type);
-            handle_obj(item);
-            objs.push(item);
-        });
-    
-        objs.forEach(function(o){ toaster_bot.add(o); });
-         
-
-        toaster_bot.rotation.x = -Math.PI/2;
-        toaster_bot.scale.multiplyScalar(0.5);
+        toaster_bot.add(collada.scene);
+        toaster_bot.scale.multiplyScalar(0.3);
         scene.add(toaster_bot);
         window.scene = scene;
     });
   
-//    camera = new THREE.Camera();
-//    var material = new THREE.ShaderMaterial({
-//        uniforms: uniforms,
-//        fragmentShader: document.getElementById("fragment_shader").innerHTML,
-//    }); 
-//    var mesh = new THREE.Mesh(new THREE.PlaneGeometry(2,2), material);
-
-//    scene.add(mesh);
     camera.position.z = 5;
     camera.position.y = 0;
     window.camera = camera;
@@ -84,7 +46,7 @@ function v(){
         uniforms.u_time.value = clock.getElapsedTime();
     	renderer.render( scene, camera );
         if(toaster_bot){
-            toaster_bot.rotation.z += 0.005;
+            toaster_bot.rotation.y += 0.005;
             //toaster_bot.rotation.x += 0.001;
         }
     }

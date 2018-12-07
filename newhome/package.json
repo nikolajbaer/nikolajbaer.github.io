@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "three": "^0.99.0",
-    "three-collada-loader": "0.0.1"
+    "three-collada-loader": "0.0.1",
+    "three-effectcomposer": "0.0.1"
   }
 }
