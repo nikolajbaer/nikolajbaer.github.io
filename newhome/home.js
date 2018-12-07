@@ -12,6 +12,7 @@ function v(){
     var scene = new THREE.Scene();
     var light = new THREE.AmbientLight( 0xeeeeee ); // soft white light
     scene.add( light );
+    scene.background = new THREE.Color( 0xffffff );
 
     uniforms = {
         u_time: { value: 0.0, type: "f" },
@@ -32,12 +33,12 @@ function v(){
         console.log("scene",collada.scene); 
         toaster_bot = new THREE.Object3D();
         toaster_bot.add(collada.scene);
-        toaster_bot.scale.multiplyScalar(0.3);
+        //toaster_bot.scale.multiplyScalar(0.3);
         scene.add(toaster_bot);
         window.scene = scene;
     });
   
-    camera.position.z = 5;
+    camera.position.z = 10;
     camera.position.y = 0;
     window.camera = camera;
     
@@ -46,7 +47,7 @@ function v(){
         uniforms.u_time.value = clock.getElapsedTime();
     	renderer.render( scene, camera );
         if(toaster_bot){
-            toaster_bot.rotation.y += 0.005;
+            toaster_bot.rotation.y += 0.001;
             //toaster_bot.rotation.x += 0.001;
         }
     }
