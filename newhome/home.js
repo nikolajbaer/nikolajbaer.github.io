@@ -1,18 +1,33 @@
 import * as THREE from 'three';
-//var ColladaLoader = require('three-collada-loader');
-var ColladaLoader = require("./ColladaLoader.js");
+import GLTFLoader from 'three-gltf-loader';
+import listen from "key-state";
+ 
 var EffectComposer = require('three-effectcomposer')(THREE)
 
 var renderer;
 var camera;
 var uniforms;
+var mesh;
+var mixer;
 var toaster_bot;
+var actions={};
+
+/*
+    TODO
+    - turn and walk
+    - outline and white color
+    - shadow / ground
+    - Dramatic entry / fade in key control help
+    - Dance mode
+
+*/
 
 function v(){
     var scene = new THREE.Scene();
-    var light = new THREE.AmbientLight( 0xeeeeee ); // soft white light
-    scene.add( light );
     scene.background = new THREE.Color( 0xffffff );
+    
+    const keys = listen(window);
+    window.keys = keys;
 
     uniforms = {
         u_time: { value: 0.0, type: "f" },
@@ -28,13 +43,22 @@ function v(){
  
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight );
 
-    var loader = new ColladaLoader();
-    loader.load( 'toasterbot.dae', function ( collada ) {
-        console.log("scene",collada.scene); 
-        toaster_bot = new THREE.Object3D();
-        toaster_bot.add(collada.scene);
-        //toaster_bot.scale.multiplyScalar(0.3);
-        scene.add(toaster_bot);
+    var loader = new GLTFLoader();
+    loader.load( 'toasterbot.gltf', function ( gltf ) {
+        const animations = gltf.animations;
+        const model = gltf.scene;
+        toaster_bot = model; 
+        scene.add(model);
+
+        console.log(animations);
+        mixer = new THREE.AnimationMixer(model);
+        animations.forEach(function(obj){
+            console.log(obj.name);
+            var clip = new THREE.AnimationClip.findByName( animations, obj.name );
+            var action = mixer.clipAction(clip);
+            actions[obj.name] = action;
+        });
+        actions["Idle"].play();
         window.scene = scene;
     });
   
@@ -43,12 +67,36 @@ function v(){
     window.camera = camera;
     
     function animate(now) {
+        if(toaster_bot && camera){
+            //camera.lookAt(toaster_bot);
+        }
     	requestAnimationFrame( animate );
         uniforms.u_time.value = clock.getElapsedTime();
     	renderer.render( scene, camera );
+        if(mixer){
+    	    mixer.update( clock.getDelta()*50 );
+        }
+
+        var walking = false;
+        if(keys.ArrowUp){
+            toaster_bot.position.z -= 0.1;
+            walking = true;
+        }
+        if(keys.ArrowDown){
+            toaster_bot.position.z += 0.1;
+            walking = true;
+        }
+        if(keys.ArrowLeft){
+            toaster_bot.position.x -= 0.1;
+            walking = true;
+        }
+        if(keys.ArrowRight){
+            toaster_bot.position.x += 0.1;
+            walking = true;
+        }
         if(toaster_bot){
-            toaster_bot.rotation.y += 0.001;
-            //toaster_bot.rotation.x += 0.001;
+            if(walking){ actions["Walk"].play(); actions["Idle"].stop(); }
+            else{ actions["Walk"].stop(); actions["Idle"].play(); }
         }
     }
     animate(0);
