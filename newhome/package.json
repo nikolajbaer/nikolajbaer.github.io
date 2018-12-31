@@ -19,10 +19,11 @@
     "webpack-dev-server": "^2.4.3"
   },
   "dependencies": {
+    "@tweenjs/tween.js": "^17.2.0",
     "key-state": "^1.0.1",
     "three": "^0.99.0",
     "three-collada-loader": "0.0.1",
-    "three-effectcomposer": "0.0.1",
-    "three-gltf-loader": "^1.99.0"
+    "three-gltf-loader": "^1.99.0",
+    "three-shader-fxaa": "^5.1.1"
   }
 }

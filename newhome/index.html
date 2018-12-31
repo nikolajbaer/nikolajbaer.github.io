@@ -47,18 +47,6 @@ urchinTracker();
   
 }
 </script>
-<script type="glsl/text" id="fragment_shader">
-uniform vec2 u_resolution;
-uniform float u_time;
-
-void main() {
-    /* W.I.P. */
-    vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-    float v = ( sin(uv.x - sin(u_time)) * sin(uv.y - cos(u_time) ) ) * 0.05 + 0.95;
-    gl_FragColor = vec4(v,v,v,1.0);
-}
-
-</script>
 <script src="bundle-home.js"></script>
 </body>
 </html>
