@@ -16,8 +16,8 @@ function main(){
 
     const vertices = [];
     for ( let x = 0; x < N; x ++ ) {
-        for( let y = 0; y < N; y ++ ){
-	        vertices.push( (N/2)-x, 0, (N/2)-y );
+        for( let z = 0; z < N; z ++ ){
+	        vertices.push( (N/2)-x, 0, (N/2)-z );
         }
     }
     uniforms = {
@@ -37,7 +37,7 @@ function main(){
     } );
     const points = new THREE.Points( geometry, material );
     points.position.y = -1
-    //points.rotation.y = Math.PI/4;
+    points.rotation.y = -Math.PI/3.5;
     scene.add( points );
 
     camera.position.y = N/10
@@ -80,6 +80,8 @@ uniform float time;
 uniform float width;
 uniform float period;
 varying float distToCamera;
+varying float distfromCenter;
+
 
 float wave(float x, float t, float d, float a){
     float t1 = width * .75 - mod(t*period,width * 1.5);
@@ -103,10 +105,11 @@ void main(){
 const fSource = `
 varying float distToCamera;
 uniform float width;
+uniform float time;
 
 void main() {
-    vec4 color = vec4(0.,0.,0.,1.);
-    vec4 fog_color = vec4(1.,1.,1.,1.);
+    vec4 color = vec4(max(1. - (time - 2.)/4.,0.));
+    vec4 fog_color = vec4(1.);
 
     float fog_amount = distToCamera/width;
     gl_FragColor = mix( color, fog_color, fog_amount);
