@@ -83,21 +83,41 @@ varying float distToCamera;
 varying float distfromCenter;
 
 
-float wave(float x, float t, float d, float a){
+float wave_y(float x, float t, float d, float a){
     float t1 = width * .75 - mod(t*period,width * 1.5);
     float p = (x+t1)/d;
     return a * (cos(p-t1) + 1.) * step(abs(t1-p),PI); 
 }
 
+float wave_x(float x,float z,float t,float d, float a){
+    float t1 = width * .75 - mod(t*period,width*1.5);
+    float p = (x+t1)/d;
+    float a1 = a;
+    return x - (a1 * cos(p-t1) * step(abs(t1-p),2.*PI)); 
+}
+
 void main(){
-    gl_PointSize = 1.5;
-    float y = wave(position.x,time * 2.,2.,2.);
+    gl_PointSize = 2.;
+
+    // shape our amplitude relative to z (breadth of wave)
+    float a = sin( (position.z+(width/2.))/width );
+
+    // shape when we crest the wave relative to x (wave path)
+    float v = (1. - (position.x + (width/2.)) / width) * a * 3.;
+
+    // calculate vertical component as sine wave, amplified later on by v
+    // TODO and later by A if we focus like a reef a-frame
+    float y = wave_y(position.x,time * 2.,2.,v * 2. );
+
+    // calculate horizontal drift amplified by v along path, and a long breadth
+    float x = wave_x(position.x,position.z,time * 2.,2.,v * 5. * a);
 
     // track distance to camera per https://stackoverflow.com/a/16137020
     vec4 cs_position = modelViewMatrix * vec4(position,1.);
     distToCamera = -cs_position.z;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position.x,y,position.z,1.);
+    // and update our position
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(x,y,position.z,1.);
 }
 
 `;
@@ -108,7 +128,7 @@ uniform float width;
 uniform float time;
 
 void main() {
-    vec4 color = vec4(max(1. - (time - 2.)/4.,0.));
+    vec4 color = vec4(max(1. - (time - 1.)/3.,0.));
     vec4 fog_color = vec4(1.);
 
     float fog_amount = distToCamera/width;
