@@ -1,6 +1,6 @@
 let scene,renderer,camera,uniforms;
 const N = 100.0;
-const P = 10.0;
+const P = 4.0;
 
 function main(){
     scene = new THREE.Scene();
@@ -81,15 +81,15 @@ uniform float width;
 uniform float period;
 varying float distToCamera;
 
-float wave(float x, float d, float a){
-    float p = x/d;
-    float t = time * 2.;
-    return a * (cos(p) + 1.) * step(abs(x),PI * d); 
+float wave(float x, float t, float d, float a){
+    float t1 = width * .75 - mod(t*period,width * 1.5);
+    float p = (x+t1)/d;
+    return a * (cos(p-t1) + 1.) * step(abs(t1-p),PI); 
 }
 
 void main(){
-    gl_PointSize = 1.;
-    float y = wave(position.x,2.,2.);
+    gl_PointSize = 1.5;
+    float y = wave(position.x,time * 2.,2.,2.);
 
     // track distance to camera per https://stackoverflow.com/a/16137020
     vec4 cs_position = modelViewMatrix * vec4(position,1.);
@@ -108,7 +108,7 @@ void main() {
     vec4 color = vec4(0.,0.,0.,1.);
     vec4 fog_color = vec4(1.,1.,1.,1.);
 
-    float fog_amount = pow(distToCamera/(width*.75),2.);
+    float fog_amount = distToCamera/width;
     gl_FragColor = mix( color, fog_color, fog_amount);
 
 }
