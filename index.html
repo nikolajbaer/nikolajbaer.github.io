@@ -4,17 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nikolaj Baer</title>
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" >
   <link rel="shortcut icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
   <style>
 body {
-background-color: white;
-color: black;
-font-family: sans-serif;
-margin: 0px;
-padding: 0px;
-width: 100%;
-height: 100%;
+  background-color: white;
+  color: black;
+  font-family: sans-serif;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  height: 100%;
 }
 #glCanvas {
   position: absolute;
@@ -27,7 +27,22 @@ height: 100%;
   z-index: -1
 }
 section {
-  flex: 1;
+  margin: auto;
+  width: 200px;
+  text-align: center;
+}
+section ul {
+  margin: 0px;
+  padding: 0px;
+}
+section li {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+  display: inline;
+}
+a {
+  color: black;
 }
   </style>
 </head>
@@ -38,9 +53,11 @@ section {
   <section class="main">
     <h1>Nikolaj Baer</h1>
     <ul class="links">
-        <li><a href="https://www.nikolajbaer.us/"><i class="fas fa-home"></i></a></li>
+        <li><a href="https://en.wikipedia.org/wiki/San_Diego"><i class="fas fa-home"></i></a></li>
         <li><a href="https://github.com/nikolajbaer/"><i class="fab fa-github"></i></a></li>
         <li><a href="https://linkedin.com/in/nikolajbaer/"><i class="fab fa-linkedin"></i></a></li>
+        <li><a href="https://twitter.com/nikolajb/"><i class="fab fa-twitter"></i></a></li>
+        <li><a href="https://nikolaj.itch.io/"><i class="fab fa-itch-io"></i></a></li>
     </ul>
   </section>
 
@@ -62,19 +79,7 @@ section {
       
     }
     </script>
-    
-    <script type="glsl/text" id="fragment_shader">
-    uniform vec2 u_resolution;
-    uniform float u_time;
-    
-    void main() {
-        /* W.I.P. */
-        vec2 uv = gl_FragCoord.xy / u_resolution.xy;
-        float v = ( sin(uv.x - sin(u_time)) * sin(uv.y - cos(u_time) ) ) * 0.05 + 0.95;
-        gl_FragColor = vec4(v,v,v,1.0);
-    }
-    
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.min.js"></script>
     <script src="main.js"></script>
     </body>
 </html>
