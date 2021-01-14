@@ -15,9 +15,11 @@ function main(){
     renderer.setClearColor( 0xffffff, 1)
 
     const vertices = [];
-    for ( let x = 0; x < N; x ++ ) {
-        for( let z = 0; z < N; z ++ ){
-	        vertices.push( (N/2)-x, 0, (N/2)-z );
+    const W = N;
+    const D = N;
+    for ( let x = 0; x < D; x ++ ) {
+        for( let z = 0; z < W; z ++ ){
+	        vertices.push( (D/2)-x, 0, (W/2)-z );
         }
     }
     uniforms = {
@@ -37,7 +39,7 @@ function main(){
     } );
     const points = new THREE.Points( geometry, material );
     points.position.y = -1
-    points.rotation.y = -Math.PI/3.5;
+    points.rotation.y = -Math.PI/9.3;
     scene.add( points );
 
     camera.position.y = N/10
@@ -80,30 +82,37 @@ uniform float time;
 uniform float width;
 uniform float period;
 varying float distToCamera;
-varying float distfromCenter;
+varying float distFromCenter;
 
-
+// Vertical Component (height)
 float wave_y(float x, float t, float d, float a){
     float t1 = width * .75 - mod(t*period,width * 1.5);
     float p = (x+t1)/d;
     return a * (cos(p-t1) + 1.) * step(abs(t1-p),PI); 
 }
-
+ 
+// Horizontal Component (translates on X or the path of the wave)
+// Currently disabled until i figure out a better way to do this
 float wave_x(float x,float z,float t,float d, float a){
+    return x;
     float t1 = width * .75 - mod(t*period,width*1.5);
     float p = (x+t1)/d;
     float a1 = a;
+    // TODO how to make the lip fall when it gets high enough
     return x - (a1 * cos(p-t1) * step(abs(t1-p),2.*PI)); 
 }
 
 void main(){
+    // NOTE I am composing functions, not doing a proper first principles approach
+    // this may or may not yield a nice looking result
+
     gl_PointSize = 2.;
 
     // shape our amplitude relative to z (breadth of wave)
-    float a = sin( (position.z+(width/2.))/width );
+    float a = cos( (position.z+(width/2.))/width );
 
     // shape when we crest the wave relative to x (wave path)
-    float v = (1. - (position.x + (width/2.)) / width) * a * 3.;
+    float v = (1. - (position.x + (width/2.)) / width) * a * 2.;
 
     // calculate vertical component as sine wave, amplified later on by v
     // TODO and later by A if we focus like a reef a-frame
@@ -116,6 +125,8 @@ void main(){
     vec4 cs_position = modelViewMatrix * vec4(position,1.);
     distToCamera = -cs_position.z;
 
+    distFromCenter = sqrt(pow(position.x,2.) + pow(position.z,2.));
+
     // and update our position
     gl_Position = projectionMatrix * modelViewMatrix * vec4(x,y,position.z,1.);
 }
@@ -124,6 +135,7 @@ void main(){
 
 const fSource = `
 varying float distToCamera;
+varying float distFromCenter;
 uniform float width;
 uniform float time;
 
@@ -131,7 +143,7 @@ void main() {
     vec4 color = vec4(max(1. - (time - 1.)/3.,0.));
     vec4 fog_color = vec4(1.);
 
-    float fog_amount = distToCamera/width;
+    float fog_amount = pow(distFromCenter/(width*0.5),1.);
     gl_FragColor = mix( color, fog_color, fog_amount);
 
 }
