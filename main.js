@@ -140,7 +140,8 @@ uniform float width;
 uniform float time;
 
 void main() {
-    vec4 color = vec4(max(1. - (time - 1.)/3.,0.));
+    float fade_in = pow(min(time,5.) / 5.,2.); // linear fade in over 3s
+    vec4 color = mix(vec4(0.208,0.4,0.451,1.),vec4(1.),1. - fade_in);
     vec4 fog_color = vec4(1.);
 
     float fog_amount = pow(distFromCenter/(width*0.5),1.);
