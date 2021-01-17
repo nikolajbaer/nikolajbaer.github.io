@@ -1,8 +1,8 @@
-let scene,renderer,camera,uniforms,vSource,fSource,mouse_xpos;
+let scene,renderer,camera,uniforms,vSource,fSource,mouse_xpos,mouse_ypos,time;
 const N = 100.0;
 const S = 0.5; // space between particles 
-const P = 6.0;
-const A = 2.0;
+const P = 8.0;
+const A = 5.0;
 const mouse_buttons = [0,0,0,0,0,0]
 
 function main(){
@@ -26,6 +26,7 @@ function main(){
         }
     }
     uniforms = {
+        elapsed: { value: 0.0 },
         time: { value: 1.0 },
         resolution: { value: new THREE.Vector2() },
         width: { value: N },
@@ -47,20 +48,32 @@ function main(){
     points.rotation.y = -Math.PI/9.3;
     scene.add( points );
 
-    camera.position.y = N/10
+    camera.position.y = N/15
     camera.position.z = -N/2
-    camera.lookAt(0,0,N/2)
+    camera.lookAt(0,1,N/2)
 
-    const t0 = performance.now()
+    time = 0;
+    let last = performance.now();
+    let debug_t_el = document.getElementById("debug_time");
 
     function animate() {
-        //points.rotation.y += 0.001
+        const now = performance.now();
+        const dt = now - last;
+        last = now;
+
+        if( mouse_buttons[2]){
+            points.rotation.y = mouse_ypos * 2 * Math.PI;
+        }
         requestAnimationFrame( animate );
         if(mouse_buttons[0]){
-		    uniforms[ 'time' ].value = mouse_xpos * (N/P) * 1.5; 
+		    time = mouse_xpos * (N/P) * 1.5 * 1000; 
         }else{
-		    uniforms[ 'time' ].value = (performance.now() - t0) / 1000;
+            time += dt;
         }
+
+        uniforms[ 'time' ].value = time / 1000;
+        uniforms[ 'elapsed' ].value = now / 1000;
+        debug_t_el.textContent = (time/1000).toFixed(3)
         renderer.render( scene, camera );
     }
 
@@ -78,12 +91,18 @@ function onWindowResize(){
 }
 
 // track mouse x position and button state
-function onMouseMove(e){ mouse_xpos = (e.clientX / window.innerWidth) }
-function onMouseDown(e){   ++mouse_buttons[e.button] }
-function onMouseUp(e){  --mouse_buttons[e.button] }
-function onTouchStart(e){   ++mouse_buttons[0] }
-function onTouchEnd(e){  --mouse_buttons[0] }
-function onTouchMove(e){ mouse_xpos = (e.touches[0].clientX / window.innerWidth) }
+function onMouseMove(e){ 
+    mouse_xpos = (e.clientX / window.innerWidth);
+    mouse_ypos = (e.clientY / window.innerHeight);
+}
+function onMouseDown(e){   mouse_buttons[e.button] = 1; }
+function onMouseUp(e){  mouse_buttons[e.button] = 0; }
+function onTouchStart(e){   mouse_buttons[0] = 1; }
+function onTouchEnd(e){  mouse_buttons[0] = 0; }
+function onTouchMove(e){ 
+    mouse_xpos = (e.touches[0].clientX / window.innerWidth) 
+    mouse_ypos = (e.touches[0].clientY / window.innerHeight);
+}
 
 window.addEventListener( 'mousemove', onMouseMove, false);
 window.addEventListener( 'mousedown', onMouseDown, false);
