@@ -1,4 +1,4 @@
-let scene,renderer,camera,uniforms,vSource,fSource;
+let scene,renderer,camera,uniforms,vSource,fSource,mouse_xpos;
 const N = 100.0;
 const S = 0.5; // space between particles 
 const P = 6.0;
@@ -81,10 +81,16 @@ function onWindowResize(){
 function onMouseMove(e){ mouse_xpos = (e.clientX / window.innerWidth) }
 function onMouseDown(e){   ++mouse_buttons[e.button] }
 function onMouseUp(e){  --mouse_buttons[e.button] }
+function onTouchStart(e){   ++mouse_buttons[0] }
+function onTouchEnd(e){  --mouse_buttons[0] }
+function onTouchMove(e){ mouse_xpos = (e.touches[0].clientX / window.innerWidth) }
 
 window.addEventListener( 'mousemove', onMouseMove, false);
 window.addEventListener( 'mousedown', onMouseDown, false);
 window.addEventListener( 'mouseup', onMouseUp, false);
+window.addEventListener( 'touchstart', onTouchStart, false);
+window.addEventListener( 'touchend', onTouchEnd, false);
+window.addEventListener( 'touchmove', onTouchMove, false);
 
 // Load our GLSL then init THREE.js scene
 window.onload = function(){
