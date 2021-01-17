@@ -1,9 +1,10 @@
-let scene,renderer,camera,uniforms,vSource,fSource,mouse_xpos,mouse_ypos,time;
+let scene,renderer,camera,uniforms,vSource,fSource,time,controls;
 const N = 100.0;
 const S = 0.5; // space between particles 
 const P = 8.0;
-const A = 5.0;
-const mouse_buttons = [0,0,0,0,0,0]
+const A = 3.0;
+const keys = {};
+let paused = false;
 
 function main(){
     scene = new THREE.Scene();
@@ -32,6 +33,7 @@ function main(){
         width: { value: N },
         period: { value: P },
         amplitude: { value: A },
+        reef_location: { value: new THREE.Vector3(W*0.65,0,0) }
     }
 
 
@@ -48,9 +50,12 @@ function main(){
     points.rotation.y = -Math.PI/9.3;
     scene.add( points );
 
-    camera.position.y = N/15
+    camera.position.x = 0;
+    camera.position.y = 15 
     camera.position.z = -N/2
-    camera.lookAt(0,1,N/2)
+    camera.lookAt(0,-15,N/2)
+
+    controls = new THREE.OrbitControls(camera,renderer.domElement);
 
     time = 0;
     let last = performance.now();
@@ -61,13 +66,15 @@ function main(){
         const dt = now - last;
         last = now;
 
-        if( mouse_buttons[2]){
-            points.rotation.y = mouse_ypos * 2 * Math.PI;
-        }
         requestAnimationFrame( animate );
-        if(mouse_buttons[0]){
-		    time = mouse_xpos * (N/P) * 1.5 * 1000; 
-        }else{
+
+        controls.update();
+
+        if(keys['ArrowLeft']){
+            time -= dt;
+        }else if(keys['ArrowRight']){
+            time += dt;
+        }else if(!paused){
             time += dt;
         }
 
@@ -83,33 +90,19 @@ function main(){
 
 }
 
+
+window.addEventListener('keydown', e => {keys[e.key] = 1; } )
+window.addEventListener('keyup', e => { keys[e.key] = 0; } )
+window.addEventListener('keypress', e => { 
+    if( e.key == ' '){ paused = ! paused; }
+});
+
 function onWindowResize(){
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
 
 }
-
-// track mouse x position and button state
-function onMouseMove(e){ 
-    mouse_xpos = (e.clientX / window.innerWidth);
-    mouse_ypos = (e.clientY / window.innerHeight);
-}
-function onMouseDown(e){   mouse_buttons[e.button] = 1; }
-function onMouseUp(e){  mouse_buttons[e.button] = 0; }
-function onTouchStart(e){   mouse_buttons[0] = 1; }
-function onTouchEnd(e){  mouse_buttons[0] = 0; }
-function onTouchMove(e){ 
-    mouse_xpos = (e.touches[0].clientX / window.innerWidth) 
-    mouse_ypos = (e.touches[0].clientY / window.innerHeight);
-}
-
-window.addEventListener( 'mousemove', onMouseMove, false);
-window.addEventListener( 'mousedown', onMouseDown, false);
-window.addEventListener( 'mouseup', onMouseUp, false);
-window.addEventListener( 'touchstart', onTouchStart, false);
-window.addEventListener( 'touchend', onTouchEnd, false);
-window.addEventListener( 'touchmove', onTouchMove, false);
 
 // Load our GLSL then init THREE.js scene
 window.onload = function(){
