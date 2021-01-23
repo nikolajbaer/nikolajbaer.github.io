@@ -33,7 +33,8 @@ function main(){
         width: { value: N },
         period: { value: P },
         amplitude: { value: A },
-        reef_location: { value: new THREE.Vector3(W*0.65,0,0) }
+        thickness: { value: 5. },
+        reef_location: { value: new THREE.Vector3(0,-1,0) }
     }
 
 
@@ -50,6 +51,13 @@ function main(){
     points.rotation.y = -Math.PI/9.3;
     scene.add( points );
 
+    const reef_ref = new THREE.Mesh( 
+        new THREE.BoxGeometry(1,1,1), 
+        new THREE.MeshBasicMaterial( {color: 0xFF0000 })
+    )
+    reef_ref.position = uniforms.reef_location
+    //scene.add(reef_ref)
+
     camera.position.x = 0;
     camera.position.y = 15 
     camera.position.z = -N/2
@@ -60,6 +68,20 @@ function main(){
     time = 0;
     let last = performance.now();
     let debug_t_el = document.getElementById("debug_time");
+
+    // *** init shader editor ***
+    let reload_shader_button = document.getElementById("reload_shaders");
+    reload_shader_button.addEventListener("click", e => {
+        load_shaders( () => {
+            const new_material = new THREE.ShaderMaterial( {
+                uniforms: uniforms,
+                vertexShader: vSource,
+        	    fragmentShader: fSource
+            } );                
+            points.material = new_material;
+            console.log("reloaded shaders")
+        })
+    })
 
     function animate() {
         const now = performance.now();
@@ -106,12 +128,16 @@ function onWindowResize(){
 
 // Load our GLSL then init THREE.js scene
 window.onload = function(){
+    load_shaders(main)
+}
+
+function load_shaders(callback){
     var vSrcRq = new XMLHttpRequest();
     vSrcRq.open('GET', 'vertex.glsl', true);
     vSrcRq.onload = function() {
         vSource = this.response;
         if(vSource && fSource){
-            main()
+            callback()
         }
     }
     vSrcRq.send();
@@ -120,7 +146,7 @@ window.onload = function(){
     fSrcRq.onload = function() {
         fSource = this.response;
         if(vSource && fSource){
-            main()
+            callback()
         }
     }
     fSrcRq.send();

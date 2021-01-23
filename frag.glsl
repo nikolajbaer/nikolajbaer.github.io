@@ -1,5 +1,6 @@
 varying float distToCamera;
 varying float distFromCenter;
+varying float distFromReef;
 varying float vertex_y;
 uniform float width;
 uniform float elapsed;
