@@ -48,7 +48,7 @@ function main(){
     } );
     const points = new THREE.Points( geometry, material );
     points.position.y = -1
-    points.rotation.y = -Math.PI/9.3;
+    points.rotation.y = Math.PI/4;
     scene.add( points );
 
     const reef_ref = new THREE.Mesh( 
@@ -58,10 +58,10 @@ function main(){
     reef_ref.position = uniforms.reef_location
     //scene.add(reef_ref)
 
-    camera.position.x = 0;
+    camera.position.x = -50;
     camera.position.y = 15 
-    camera.position.z = -N/2
-    camera.lookAt(0,-15,N/2)
+    camera.position.z = -26
+    camera.lookAt(0,5,0)
 
     controls = new THREE.OrbitControls(camera,renderer.domElement);
 
