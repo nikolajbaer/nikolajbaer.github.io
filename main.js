@@ -34,7 +34,7 @@ function main(){
         period: { value: P },
         amplitude: { value: A },
         thickness: { value: 5. },
-        reef_location: { value: new THREE.Vector3(0,-1,0) }
+        reef_location: { value: new THREE.Vector3(-N*0.5,0,0) }
     }
 
 
@@ -58,9 +58,9 @@ function main(){
     reef_ref.position = uniforms.reef_location
     //scene.add(reef_ref)
 
-    camera.position.x = -50;
+    camera.position.x = -77
     camera.position.y = 15 
-    camera.position.z = -26
+    camera.position.z = -1.5
     camera.lookAt(0,5,0)
 
     controls = new THREE.OrbitControls(camera,renderer.domElement);

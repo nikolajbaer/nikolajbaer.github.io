@@ -14,6 +14,9 @@ void main() {
     vec4 fog_color = vec4(1.);
 
     float fog_amount = pow(distFromCenter/(width*0.5),1.);
-    gl_FragColor = mix( (crash > 0.)?vec4(1.):color, fog_color, fog_amount);
-
+    if(crash  > 0.){
+        gl_FragColor = vec4(1.,1.,1.,0.);
+    }else{
+        gl_FragColor = mix( color, fog_color, fog_amount);
+    }
 }

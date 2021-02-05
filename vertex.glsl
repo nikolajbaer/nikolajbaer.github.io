@@ -64,19 +64,26 @@ void main(){
     // TODO and later by A if we focus like a reef a-frame
 
     float height_above_reef = (y_pos - reef_location.y)/(amplitude);
+    //float height_above_reef = clamp((pos>0.)?log(pos/4.):0.,0.,amplitude);
 
     // twist based on height of wave
     // but scale influence down by xz distance from reef point
-    float twist = pow(height_above_reef,1.5); // * distFromReef/(width/4.);
+    float twist = pow(height_above_reef,1.5);
     float theta = twist * PI/8.;
-    //float x = position.x * cos(theta) - y_pos * sin(theta);
-    //float y_twist = y_pos * cos(theta) + position.x * sin(theta);
-    //float y = clamp(y_twist, 0., amplitude*10.);
+    float y_twist = y_pos * cos(theta) + position.x * sin(theta);
+    float x = position.x * cos(theta) - y_pos * sin(theta);
 
-    crash = 0.; //(y_twist < 0. && twist > 0.1)?1.:0.;
+    float y = clamp(y_twist,0.,amplitude * 10.0);
 
-    float y = y_pos;
-    float x = position.x;
+    if(y_twist < 0.){
+        crash = 1.;
+    }
+
+    //crash = (y_twist < 0. && twist > 0.1)?1.:0.;
+    //crash = (y_pos<=-.1)?1.:0.;
+
+    //float y = y_pos;
+    //float x = position.x;
 
     
     gl_PointSize = 3. * (1. - distToCamera/width);
