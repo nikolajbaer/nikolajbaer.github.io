@@ -68,6 +68,9 @@ a {
   bottom: 10px;
   right: 10px;
   cursor: pointer;
+  font-family: serif;
+  font-style: italic;
+  color: #666;
 }
 #edit_overlay {
   position: absolute;
@@ -105,14 +108,15 @@ a {
     <div id="logo"><img alt="A robot with toaster as a head. I drew this at some point" src="toasterbot.svg" width="50px" /></div>
     <h1>Nikolaj Baer</h1>
     <ul class="links">
-        <li><a href="https://en.wikipedia.org/wiki/San_Diego"><i class="fas fa-home"></i></a></li>
-        <li><a href="https://github.com/nikolajbaer/"><i class="fab fa-github"></i></a></li>
-        <li><a href="https://linkedin.com/in/nikolajbaer/"><i class="fab fa-linkedin"></i></a></li>
-        <li><a href="https://www.thingiverse.com/nikolajbaer/designs"><i class="fas fa-cube"></i></a></li>
-        <li><a href="https://nikolaj.itch.io/"><i class="fab fa-itch-io"></i></a></li>
-        <li><a href="https://observablehq.com/@nikolajbaer"><i class="fas fa-chart-line"></i></a></li>
-        <li><a href="https://www.cukeragency.com/"><i class="fab fa-black-tie"></i></a></li>
-        <li><a href="https://opensandiego.org/"><i class="fas fa-hands-helping"></i></a></li>
+        <li><a href="https://en.wikipedia.org/wiki/San_Diego"><i title="where I live" class="fas fa-home"></i></a></li>
+        <li><a href="https://github.com/nikolajbaer/"><i class="fab fa-github" title="github"></i></a></li>
+        <li><a href="https://linkedin.com/in/nikolajbaer/"><i class="fab fa-linkedin" title="linkedin / resume"></i></a></li>
+        <li><a href="https://www.thingiverse.com/nikolajbaer/designs"><i class="fas fa-cube" title="thingiverse profile / 3d printing things I have designed"></i></a></li>
+        <li><a href="https://connect.garmin.com/modern/profile/nikolajbaer"><i class="fas fa-running" title="garmin connect profile / running"></i></a>
+        <li><a href="https://nikolaj.itch.io/"><i class="fab fa-itch-io" title="itch.io profile / hobby game dev"></i></a></li>
+        <li><a href="https://observablehq.com/@nikolajbaer"><i class="fas fa-chart-line" title="observablehq profile / hobby data viz"></i></a></li>
+        <li><a href="https://www.cukeragency.com/"><i class="fab fa-black-tie" title="cuker agency - company i work for"></i></a></li>
+        <li><a href="https://opensandiego.org/"><i class="fas fa-hands-helping" title="open san diego - volunteer group I participate in"></i></a></li>
     </ul>
   </section>
 
@@ -121,6 +125,7 @@ a {
   </div>
   
   <div id="tools">
+    <span>space to pause, arrow keys to scan, mouse to change view</span>
     <i id="reload_shaders" class="fas fa-sync-alt"></i>
   </div>
 

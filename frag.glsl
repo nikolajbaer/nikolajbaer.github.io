@@ -13,7 +13,7 @@ void main() {
     vec4 color = mix(vec4(0.,0.,v,1.),vec4(1.),1. - fade_in);
     vec4 fog_color = vec4(1.);
 
-    float fog_amount = pow(distFromCenter/(width*0.5),1.);
+    float fog_amount = pow(distFromCenter/(width),1.);
     if(crash  > 0.){
         gl_FragColor = vec4(1.,1.,1.,0.);
     }else{
