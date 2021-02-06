@@ -128,7 +128,19 @@ function onWindowResize(){
 
 // Load our GLSL then init THREE.js scene
 window.onload = function(){
+    if(window.location.hostname != "localhost"){  // only useful for dev
+        document.getElementById("reload_shaders").style.display = "none"
+    }
     load_shaders(main)
+    init_info_button()
+}
+
+function init_info_button(){
+    document.getElementById("show_info").addEventListener("click", () => {
+        const e = document.getElementById("info")
+        if(e.style.display == "block"){ e.style.display = "none" }
+        else{  e.style.display = "block" }
+    })
 }
 
 function load_shaders(callback){

@@ -68,9 +68,20 @@ a {
   bottom: 10px;
   right: 10px;
   cursor: pointer;
+  text-align: right;
+}
+#info {
+  display: none;
   font-family: serif;
   font-style: italic;
   color: #666;
+  text-align: left;
+  width: 300px;
+  background-color: #eee;
+  padding: 3px;
+  border: solid 1px #aaa;
+  margin-left: 4px;
+  margin-bottom: 4px;
 }
 #edit_overlay {
   position: absolute;
@@ -125,8 +136,16 @@ a {
   </div>
   
   <div id="tools">
-    <span>space to pause, arrow keys to scan, mouse to change view</span>
-    <i id="reload_shaders" class="fas fa-sync-alt"></i>
+    <div id="info">
+      this is a kinematic wave model I have been working on,<br>
+      built with <a href="https://threejs.org">three.js</a>, using <a href="https://www.khronos.org/opengl/wiki/Core_Language_(GLSL)">glsl</a>,<br>
+      probably still a work-in-progress<br>
+      use space to pause, arrow keys to manually advance, mouse to change view
+    </div>
+    <div>
+      <i id="show_info" class="fas fa-info-circle" title="about this"></i>
+      <i id="reload_shaders" class="fas fa-sync-alt" title="reload shaders (for me in dev)"></i>
+    </div>
   </div>
 
   <div id="edit_overlay" style="display: none;">
@@ -156,7 +175,16 @@ a {
         "url": "https://www.rit.edu/",
       },
       "disambiguatingDescription": "Software Developer in San Diego, CA",
-      
+      "hasOccupation":  {
+        "@type": "Occupation",
+        "name": "Software Developer",
+      },
+      "memberOf": {
+        "@type": "Organization",
+        "name": "Open San Diego",
+        "url": "https://opensandiego.org"
+      },
+      "gender": "he/him"
     }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r124/three.js"></script>

@@ -76,9 +76,9 @@ void main(){
     float y = clamp((y_twist * twist_amp ),0.,1000.0);
     float x =(x_twist * twist_amp );
 
-    /*if(y_twist < 0.){
+    if(y_twist < 0.){
         crash = 1.;
-    }*/
+    }
 
     //crash = (y_twist < 0. && twist > 0.1)?1.:0.;
     //crash = (y_pos<=-.1)?1.:0.;
