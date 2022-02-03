@@ -1,7 +1,7 @@
 let scene,renderer,camera,uniforms,vSource,fSource,time,controls;
 const N = 100.0;
 const S = 0.5; // space between particles 
-const P = 8.0;
+const P = 16.0;
 const A = 3.0;
 const keys = {};
 let paused = false;
