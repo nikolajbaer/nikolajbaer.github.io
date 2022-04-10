@@ -6,7 +6,7 @@ const A = 3.0;
 const keys = {};
 let paused = false;
 
-function main(){
+function main(material){
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 5000 );
 
@@ -26,45 +26,42 @@ function main(){
 	        vertices.push( (D/2)-x, 0, (W/2)-z );
         }
     }
-    uniforms = {
-        elapsed: { value: 0.0 },
-        time: { value: 1.0 },
-        resolution: { value: new THREE.Vector2() },
-        width: { value: N },
-        period: { value: P },
-        amplitude: { value: A },
-        thickness: { value: 5. },
-        reef_location: { value: new THREE.Vector3(-N*0.5,0,0) }
-    }
 
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 1, 100 );
+    directionalLight.castShadow = true
+    directionalLight.position.set( 0, 0, 10 )
+    directionalLight.lookAt(0,0,0)
+    scene.add( directionalLight );
 
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
-    //const material = new THREE.PointsMaterial( { color: 0x888888, size: 0.1 } );
-    const material = new THREE.ShaderMaterial( {
-        uniforms: uniforms,
-        vertexShader: vSource,
-	    fragmentShader: fSource
-    } );
+    //const geometry = new THREE.BufferGeometry();
+    //geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+    const geometry = new THREE.PlaneGeometry( N/S, N/S, N, N );
+    /*
     const points = new THREE.Points( geometry, material );
     points.position.y = -1
     points.rotation.y = Math.PI/4;
     scene.add( points );
+    */
+    const mesh = new THREE.Mesh( geometry, material ) // new THREE.MeshBasicMaterial({color: 0xff00ff, side: THREE.DoubleSide}) )
+    scene.add( mesh )
 
-    const reef_ref = new THREE.Mesh( 
-        new THREE.BoxGeometry(1,1,1), 
-        new THREE.MeshBasicMaterial( {color: 0xFF0000 })
-    )
-    reef_ref.position = uniforms.reef_location
-    //scene.add(reef_ref)
 
-    camera.position.x = -77
-    camera.position.y = 15 
-    camera.position.z = -1.5
-    camera.lookAt(0,5,0)
+    // gizmo
+    const gizmo = new THREE.Group()
+    gizmo.add(new THREE.Line( new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector4(1,0,0)]), new THREE.LineBasicMaterial({ color: 0xff0000 })))
+    gizmo.add(new THREE.Line( new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector4(0,1,0)]), new THREE.LineBasicMaterial({ color: 0x00ff00 })))
+    gizmo.add(new THREE.Line( new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0),new THREE.Vector4(0,0,1)]), new THREE.LineBasicMaterial({ color: 0x0000ff })))
+    scene.add(gizmo)
+
+    camera.position.x = 0
+    camera.position.y = 10 
+    camera.position.z = 5 
+    camera.up = new THREE.Vector3(0,0,1)
 
     controls = new THREE.OrbitControls(camera,renderer.domElement);
-
+    controls.minPolarAngle = 0
+    controls.maxPolarAngle = Math.PI/2 * 0.98
+    
     time = 0;
     let last = performance.now();
 
@@ -85,8 +82,11 @@ function main(){
             time += dt;
         }
 
-        uniforms[ 'time' ].value = time / 1000;
-        uniforms[ 'elapsed' ].value = now / 1000;
+        const shader = mesh.material.userData.shader;
+			  if(shader) {
+          shader.uniforms.time.value = time / 1000;
+          shader.uniforms.elapsed.value = now / 1000;
+			  }
         renderer.render( scene, camera );
     }
 
@@ -95,7 +95,6 @@ function main(){
     animate();
 
 }
-
 
 window.addEventListener('keydown', e => {keys[e.key] = 1; } )
 window.addEventListener('keyup', e => { keys[e.key] = 0; } )
@@ -107,34 +106,38 @@ function onWindowResize(){
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
-
 }
 
-// Load our GLSL then init THREE.js scene
-window.onload = function(){
-    if(window.location.hostname != "localhost"){  // only useful for dev
-        document.getElementById("reload_shaders").style.display = "none"
-    }
-    load_shaders(main)
+function create_custom_material(vSource){
+  // modify vertex shader only via this techinque
+  // https://github.com/mrdoob/three.js/blob/master/examples/webgl_materials_modified.html
+  material = new THREE.MeshPhongMaterial({color: 0xff00ff})
+  const vParts = vSource.split('//DIVIDER')
+  material.onBeforeCompile = function(shader) {
+    console.log(shader.vertexShader)
+    //return
+    // add uniforms for our vertex shader
+    shader.uniforms.elapsed = { value: 0.0 }
+    shader.uniforms.time = { value: 1.0 }
+    shader.uniforms.resolution = { value: new THREE.Vector2() }
+    shader.uniforms.width = { value: N }
+    shader.uniforms.period = { value: P }
+    shader.uniforms.amplitude = { value: A }
+    shader.uniforms.thickness = { value: 5. }
+    shader.uniforms.reef_location = { value: new THREE.Vector3(-N*0.5,0,0) }
+    shader.vertexShader = shader.vertexShader.replace('#include <common>',vParts[0] + '\n#include <common>')
+    shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>',vParts[1])
+    material.userData.shader = shader
+    console.log(shader.vertexShader)
+  }
+  //material.customProgramCacheKey = function(){ return something }
+
+  main(material)
 }
 
-function load_shaders(callback){
-    var vSrcRq = new XMLHttpRequest();
-    vSrcRq.open('GET', 'vertex.glsl', true);
-    vSrcRq.onload = function() {
-        vSource = this.response;
-        if(vSource && fSource){
-            callback()
-        }
-    }
-    vSrcRq.send();
-    var fSrcRq = new XMLHttpRequest();
-    fSrcRq.open('GET', 'frag.glsl', true);
-    fSrcRq.onload = function() {
-        fSource = this.response;
-        if(vSource && fSource){
-            callback()
-        }
-    }
-    fSrcRq.send();
+function load_shaders(){
+    fetch('vertex.glsl')
+      .then( resp => resp.text())
+      .then( vSource => create_custom_material(vSource) )
 }
+window.onload = load_shaders
