@@ -15,6 +15,8 @@
       height: 100%;
       display: flex;
       justify-content: center;
+      color: black;
+      font-family: monospace; /* Helvetica, "Trebuchet MS", Verdana, sans-serif;*/
     } 
     #canvas {
       position: absolute;
@@ -24,15 +26,15 @@
       right: 0px;
       width: 100%;
       height: 100%;
+      min-height: 700px;
       z-index: -1
     }
     #logo {
       text-align: center;
     }
     .wrapper {
-      color: black;
-      max-width: 350px;
-      font-family: Helvetica, "Trebuchet MS", Verdana, sans-serif;
+      margin: 10px;
+      max-width: 500px;
     }
     a:visited {
       color: #333;
@@ -51,8 +53,25 @@
       list-style: none;
       padding: 0px;
     }
+    li {
+      margin-bottom: 4px;
+    }
+    ul li div {
+      padding-top: 2px;
+      color: #333;
+    }
     .main section {
       line-height: 1.25em;
+    }
+    .pill {
+      width: 40px;
+      font-size: 6pt;
+      border: 1px solid gray;
+      color: #333;
+      border-radius: 5px;
+      height: 10px;
+      padding: 2px;
+      background-color: #eee;
     }
   </style>
 </head>
@@ -60,37 +79,79 @@
 <body>
   <canvas id="canvas"></canvas>
   <div class="wrapper">
-    <div id="logo"><img alt="Toasterbot is Nikolaj's preferred avatar!" src="toasterbot.svg" width="50px" /></div>
+    <div id="logo"><img alt="Must toast bread!" src="toasterbot.svg" width="50px" /></div>
     <h1>Nikolaj Baer</h1>
+    <section class="about">
+      <p>
+        I am a San Diego based software engineer who is
+        passionate about web tech, interactive experiences, and civic tech.
+        I am currently <a href="https://www.cukeragency.com/">Director of Technology at CUKER</a>,
+        <a href="https://opensandiego.org/">Open San Diego</a> Brigade Co-Captain, 
+        a <a href="https://python.org">Python</a> and <a href="https://djangoproject.com">Django</a> developer, 
+        e-commerce nerd, JavaScript hacker, <a href="https://www.vim.org">Vim</a> user, and hobby gamedev.
+      </p>
+    </section>
 
-    <section class="main">
-      <section class="about">
-        <p>
-          I am a San Diego based software engineer who is
-          passionate about web technologies, interactive experiences, and civic tech.
-          I am currently <a href="https://www.cukeragency.com/">Director of Technology at CUKER</a>, 
-          and a long time <a href="https://python.org">Python</a> and <a href="https://djangoproject.com">Django</a> dev, 
-          eCommerce nerd, JavaScript hacker, <a href="https://www.vim.org">Vim</a> user, and hobby gamedev.
-        </p>
-      </section>
+    <section>
+      <h3>Work / Volunteer</h3>
+      <ul>
+        <li>
+          <a target="_blank" href="https://www.cukeragency.com/work/">Cuker Agency</a>
+          <div>Director of Technology/Chief Nerd since 2006</div>
+        </li>
+        <li>
+          <a target="_blank" href="https://www.getwebcube.com/">Web Cube</a>
+          <div>E-comm platform at Cuker I oversee/develop</div>
+        </li>
+        <li>
+          <a target="_blank" href="https://www.mealscount.com/">MealsCount</a>
+          <span class="pill">volunteer</span> 
+          <div>Policy optimization tool used by school districts nationwide</div>
+        </li>
+      </ul>
+    </section>
+    <section>
+      <h3>Recent Hobby Projects</h3>
+      <ul class="projects">
+        <li>
+          <a target="_blank" href="https://weather.nikolaj.dev/">Weather dashboard</a>
+          <span class="pill">prototype</span>
+          <div>Streamlined react dashboard for api.weather.gov service</div>
+        </li>
+        <li>
+          <a target="_blank" href="https://taccounts.nikolaj.dev/">T-Accounts tool</a>
+          <span class="pill">prototype</span>
+          <div>Prototype interface for accounting transactions</div>
+        </li>
+        <li>
+          <a target="_blank" href="https://bullethell.nikolaj.dev/">ProcGen Bullet Hell Game</a>
+          <span class="pill">hobby</span>
+          <div>hobby game exploring ECS, Three.js, and procedural game dynamics</div>
+        </li>
+        <li>
+          <a target="_blank" href="https://ld48.nikolajbaer.us/">Ludum Dare 48 Orbital Mechanics game</a>
+          <span class="pill">hobby</span>
+          <div>Game jam collab with <a href="https://github.com/kmooney/">kevin</a></div>
+        </li>
+        <li>
+          <a target="_blank" href="https://ldj47.nikolaj.dev/">Ludum Dare 47 arcade game</a>
+          <span class="pill">hobby</span>
+          <div>Game jam collab with <a href="https://github.com/kmooney/">kevin</a></div>
+        </li>
+        <li>
+          <a target="_blank" href="https://doubloonlagoon.nikolajbaer.us/">Ludum Dare 40 casual game</a>
+          <span class="pill">hobby</span>
+          <div>Game jam collab with <a href="https://github.com/kmooney/">kevin</a></div>
+        </li>
+      </ul>
+    </section>
 
-      <section>
-        <h3>Projects</h3>
-        <ul>
-          <li><a target="_blank" href="https://www.mealscount.com/">MealsCount</a></li>
-          <li><a target="_blank" href="https://weather.nikolaj.dev/">Weather dashboard</a></li>
-          <li><a target="_blank" href="https://bullethell.nikolaj.dev/">ProcGen Bullet Hell</a></li>
-        </ul>
-      </section>
-
-      <section>
-        <h3>Elsewhere</h3>
-        <ul>
-            <li><a href="https://github.com/nikolajbaer/"><i class="fab fa-github" title="github"></i> Github</a></li>
-            <li><a href="https://linkedin.com/in/nikolajbaer/"><i class="fab fa-linkedin" title="linkedin"></i> Linkedin</a></li>
-            <li><a href="https://nikolaj.itch.io/"><i class="fab fa-itch-io" title="itch.io"></i> Itch.io</a></li>
-        </ul>
-      </section>
+    <section>
+      <h3>Elsewhere</h3>
+      <ul>
+          <li><i class="fab fa-github" title="github"></i> <a href="https://github.com/nikolajbaer/">Github</a></li>
+          <li><i class="fab fa-linkedin" title="linkedin"></i> <a href="https://linkedin.com/in/nikolajbaer/">Linkedin</a></li>
+      </ul>
     </section>
   </div>
 
@@ -119,37 +180,31 @@
     </script>
     <script>
 
-/*
-function main(){
-  let canvas = document.querySelector("#canvas")
-  let cursor = {x:0,y:0}
-  const S = 1
-  function draw(){
-    const p1 = {
-      x:cursor.x+Math.random()*S,
-      y:cursor.y+Math.random()*S
-    }
-    const ctx = canvas.getContext('2d'); 
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(cursor.x,cursor.y)
-    ctx.lineTo(p1.x,p1.y)
-    ctx.closePath()
-    ctx.stroke()
-    cursor.x = p1.x
-    cursor.y = p1.y
-    requestAnimationFrame(draw)
-  }
-  onResize()
-  draw()
+let canvas = document.getElementById("canvas")
+let pts = Array(300).fill(0)
+function setsize(){
+  let rect = canvas.getClientRects()[0]
+  canvas.width = rect.width
+  canvas.height = rect.height
 }
-function onResize(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight; 
+function tick(){
+  pts.forEach((x,i) => {
+    pts[i] = x + Math.random()/1000
+  })
+  let ctx = canvas.getContext('2d')
+  ctx.fillStyle='#ffffff'
+  ctx.fillRect(0,0,canvas.width,canvas.height)
+  ctx.strokeStyle='#eeeeee'
+  ctx.beginPath()
+  ctx.moveTo(pts[0]*canvas.width,0)
+  pts.forEach((x,i)=>ctx.lineTo(x*canvas.width,(i/pts.length)*canvas.height))
+  ctx.stroke()
+  requestAnimationFrame(() => tick())
 }
-window.onload = main
-window.resize = onResize
-*/
+setsize()
+tick()
+window.addEventListener('resize',() => setsize())
+
     </script>
   </body>
 </html>
