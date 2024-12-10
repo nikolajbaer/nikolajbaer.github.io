@@ -3,6 +3,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 function initGame(){
     document.getElementById("boring_stuff").className += " fadeout";
+    const speedometer = document.createElement('div')
+    speedometer.className = "speedometer"
+    document.body.appendChild(speedometer)
 
     const UP = new THREE.Vector3(0,1,0)
     const keys = new Map()
@@ -33,6 +36,7 @@ function initGame(){
     scene.add( light );
 
     const skier = new THREE.Group()
+    skier.position.y = 1.5
     skier.position.z = -125
     scene.add(skier)
 
@@ -91,25 +95,89 @@ function initGame(){
     const TREE_HIT_RADIUS = 2
     const slopeAxis = new THREE.Vector3(1,0,0)
     const SKIER_POS = -50
+    const actions = {} 
+    let currentAction = null
+    let currentSpeed = 0
+    let tucking = false
+    let snowplowing = false
+
+    const changeAction = (name,weight) => {
+        if(currentAction === actions[name]) return
+        if(currentAction && currentAction !== actions.skiing){
+            currentAction.fadeOut(0.1).stop()
+        }
+        actions[name]
+            .reset()
+            .setEffectiveTimeScale(1)
+            .setEffectiveWeight(weight)
+            .fadeIn(0.1)
+            .play()
+        currentAction = actions[name]
+    }
+
     const tick = (delta) => {
         if(gameOver){
             return
         }
+        currentSpeed = velocity.length()/4 // completely made up scaling factor
+        speedometer.innerHTML = `${currentSpeed.toLocaleString({minimumIntegerDigits:2,maximumFractionDigits:0})}mph`
         if(skier.position.z < SKIER_POS){
             skier.position.add(velocity.clone().multiplyScalar(delta))
         }else{
+            const turnScale = Math.min(currentSpeed,40)/40
+            let turning = false
             if(keys.get('ArrowLeft') || keys.get('MouseLeft')){
-                if(skier.rotation.y > -Math.PI/2)
+                if(skier.rotation.y > -Math.PI/2){
+                    turning = true
                     skier.rotation.y -= delta * 3 
+                    // we are facing the opposite way
+                    // TODO scale weight based on speed
+                    changeAction("right_turn",turnScale) 
+                }
             }else if(keys.get('ArrowRight') || keys.get('MouseRight')){
-                if(skier.rotation.y < Math.PI/2)
+                if(skier.rotation.y < Math.PI/2){
+                    turning = true
                     skier.rotation.y += delta * 3 
+                    changeAction("left_turn",turnScale) 
+                }
             }
+
+            
+            if(!tucking){
+                if(keys.get('ArrowDown') || keys.get('MouseDown')){
+                    console.log("tuck")
+                    tucking = true
+                    actions.tuck.reset().fadeIn(0.2).play()
+                }
+            }else if(tucking){
+                if(!(keys.get('ArrowDown') && keys.get('MouseDown'))){
+                    console.log("untuck")
+                    tucking = false
+                    actions.tuck.fadeOut(0.1).stop()
+                }
+                if(turning && tucking){
+                    actions.tuck.setEffectiveWeight(0.5)
+                }else{
+                    actions.tuck.setEffectiveWeight(1.0)
+                }
+            }
+
+            if(!snowplowing && (keys.get('ArrowUp') || keys.get('MouseUp'))){
+                snowplowing = true
+                actions.snow_plow.reset().fadeIn(0.2).play()
+            }else if(snowplowing && !(keys.get('ArrowUp') && keys.get('MouseUp'))){
+                snowplowing = false
+                actions.snow_plow.fadeOut(0.2).stop()
+            }
+
             // update velocity in the direction of skier
+            const frictionScale = 0.01 * Math.max(tucking ? 0.5 : (snowplowing ? 20.0 : 1),1)
             velocity.set(0,0,velocity.length()).applyAxisAngle(UP,skier.rotation.y)
             velocity.add(GRAVITY.clone().multiplyScalar(delta * Math.sin(slopeAngle)))
+            // Downhill friction
             velocity.add(FRICTION.clone().multiplyScalar(delta * Math.sin(skier.rotation.y)))
-            velocity.add(velocity.clone().normalize().multiplyScalar(-1).multiplyScalar(0.01))
+            // Ski / wind friction
+            velocity.add(velocity.clone().normalize().multiplyScalar(-1).multiplyScalar(frictionScale))
 
             for(let i=0; i< trees.length;i++){
                 trees[i].pos.z -= velocity.z * delta
@@ -143,9 +211,13 @@ function initGame(){
     loader.load("toasterbot_skifree.glb",  (gltf) => {
         console.log(gltf)
         mixer = new THREE.AnimationMixer( gltf.scene );
-        const clip = gltf.animations.find((clip) => clip.name === "skiing")
-        const action = mixer.clipAction(clip)
-        action.play()
+        for(const clipName of ["skiing","left.turn","right.turn","tuck","snow.plow"]){
+            const clip  = gltf.animations.find((clip) => clip.name === clipName)
+            console.log("loading ",clipName,"as",clipName.replace('.','_'),clip)
+            actions[clipName.replace('.','_')] = mixer.clipAction(clip)
+        }
+
+        changeAction("skiing",1) 
 
         const toasterBody = gltf.scene.children.find(obj=>obj.name==="rig").children.find(obj=>obj.name==="ToasterBody")
         toasterBody.castShadow = true
@@ -166,7 +238,6 @@ function initGame(){
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        composer.setSize(window.innerWidth, window.innerHeight);
     });
 
     window.addEventListener('keydown',(e) => keys.set(e.key,true))
@@ -190,6 +261,17 @@ function initGame(){
                 keys.set('MouseLeft',false)
                 keys.set('MouseRight',true)
             }
+            if(e.clientY > window.innerHeight * 0.9){
+                keys.set('MouseUp',false)
+                keys.set('MouseDown',true)
+            }else if(e.clientY < window.innerHeight * 0.4){
+                keys.set('MouseUp',true)
+                keys.set('MouseDown',false)
+            }else{
+                keys.set('MouseUp',false)
+                keys.set('MouseDown',false)
+            }
+
         }
     })
     window.addEventListener('pointerup', (e) => {
