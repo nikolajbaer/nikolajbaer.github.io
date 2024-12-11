@@ -126,7 +126,7 @@ function initGame(){
         }else{
             const turnScale = Math.min(currentSpeed,40)/40
             let turning = false
-            if(keys.get('ArrowLeft') || keys.get('MouseLeft')){
+            if(keys.get('ArrowLeft')){
                 if(skier.rotation.y > -Math.PI/2){
                     turning = true
                     skier.rotation.y -= delta * 3 
@@ -134,7 +134,7 @@ function initGame(){
                     // TODO scale weight based on speed
                     changeAction("right_turn",turnScale) 
                 }
-            }else if(keys.get('ArrowRight') || keys.get('MouseRight')){
+            }else if(keys.get('ArrowRight')){
                 if(skier.rotation.y < Math.PI/2){
                     turning = true
                     skier.rotation.y += delta * 3 
@@ -144,13 +144,13 @@ function initGame(){
 
             
             if(!tucking){
-                if(keys.get('ArrowDown') || keys.get('MouseDown')){
+                if(keys.get('ArrowDown')){
                     console.log("tuck")
                     tucking = true
                     actions.tuck.reset().fadeIn(0.2).play()
                 }
             }else if(tucking){
-                if(!(keys.get('ArrowDown') && keys.get('MouseDown'))){
+                if(!keys.get('ArrowDown')){
                     console.log("untuck")
                     tucking = false
                     actions.tuck.fadeOut(0.1).stop()
@@ -162,10 +162,10 @@ function initGame(){
                 }
             }
 
-            if(!snowplowing && (keys.get('ArrowUp') || keys.get('MouseUp'))){
+            if(!snowplowing && keys.get('ArrowUp')){
                 snowplowing = true
                 actions.snow_plow.reset().fadeIn(0.2).play()
-            }else if(snowplowing && !(keys.get('ArrowUp') && keys.get('MouseUp'))){
+            }else if(snowplowing && !keys.get('ArrowUp')){
                 snowplowing = false
                 actions.snow_plow.fadeOut(0.2).stop()
             }
@@ -217,7 +217,8 @@ function initGame(){
             actions[clipName.replace('.','_')] = mixer.clipAction(clip)
         }
 
-        changeAction("skiing",1) 
+        actions.skiing.play()
+        currentAction = actions.skiing
 
         const toasterBody = gltf.scene.children.find(obj=>obj.name==="rig").children.find(obj=>obj.name==="ToasterBody")
         toasterBody.castShadow = true
@@ -261,17 +262,6 @@ function initGame(){
                 keys.set('MouseLeft',false)
                 keys.set('MouseRight',true)
             }
-            if(e.clientY > window.innerHeight * 0.9){
-                keys.set('MouseUp',false)
-                keys.set('MouseDown',true)
-            }else if(e.clientY < window.innerHeight * 0.4){
-                keys.set('MouseUp',true)
-                keys.set('MouseDown',false)
-            }else{
-                keys.set('MouseUp',false)
-                keys.set('MouseDown',false)
-            }
-
         }
     })
     window.addEventListener('pointerup', (e) => {
