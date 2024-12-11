@@ -6,6 +6,9 @@ function initGame(){
     const speedometer = document.createElement('div')
     speedometer.className = "speedometer"
     document.body.appendChild(speedometer)
+    const trackCanvas = document.createElement('canvas')
+    trackCanvas.style.display = "none"
+    document.body.appendChild(trackCanvas)
 
     const UP = new THREE.Vector3(0,1,0)
     const keys = new Map()
@@ -40,7 +43,13 @@ function initGame(){
     skier.position.z = -125
     scene.add(skier)
 
-    const snow = new THREE.Mesh(new THREE.PlaneGeometry(1000,1000),new THREE.MeshBasicMaterial({color:"white"}))
+
+    const drawingContext = trackCanvas.getContext( '2d' );
+    const snowMaterial = new THREE.MeshStandardMaterial({color:"white"})
+    // TODO
+    //snowMaterial.bumpMap = new THREE.CanvasTexture(drawingContext)
+
+    const snow = new THREE.Mesh(new THREE.PlaneGeometry(1000,1000),snowMaterial)
     snow.rotation.x = -Math.PI/2
     snow.receiveShadow = true
     scene.add(snow)
@@ -113,6 +122,12 @@ function initGame(){
             .fadeIn(0.1)
             .play()
         currentAction = actions[name]
+    }
+
+    const updateTracks = () => {
+        // TODO draw line from last ski pos to current ski pos
+        // Also shift texture offset up by z-shift, and clear top of texture
+        snowMaterial.needsUpdate = true
     }
 
     const tick = (delta) => {
