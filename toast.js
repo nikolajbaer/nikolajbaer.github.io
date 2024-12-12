@@ -21,7 +21,7 @@ function initGame(){
     camera.updateProjectionMatrix()
     window.camera = camera
 
-    const renderer = new THREE.WebGLRenderer({canvas:document.getElementById("canvas"),antialias:true});
+    const renderer = new THREE.WebGLRenderer({canvas:document.getElementById("canvas")});
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.setClearColor(0xffffff);
 
@@ -57,9 +57,10 @@ function initGame(){
     let treeMesh
     let treeInstances
     const TREE_COUNT = 100
-    const trees = Array.from({length:TREE_COUNT},() => ({pos:new THREE.Vector3(),scale:1}))
+    const trees = []
     
     let mixer;
+    let yetiMixer;
     let velocity = new THREE.Vector3(0,0,10)
     
     let slopeAngle = THREE.MathUtils.degToRad(30) 
@@ -69,26 +70,27 @@ function initGame(){
     const FOREST_WIDTH = 1000
     const zOffset = 300
 
-    const spawnTree = (i) => {
-        trees[i].pos.set(
+    const spawnTree = (tree,zRange,offset) => {
+        tree.position.set(
             (Math.random() - 0.5)*FOREST_WIDTH,
-            0,
-            (Math.random() * 10) + zOffset,
+            -0.5,
+            (Math.random())*zRange + offset,
         )
-        trees[i].scale = 1 + (Math.random()*0.4)
-        trees[i].slope = -slopeAngle
+        const scale = 2 + (Math.random()*2)
+        tree.scale.set(scale,scale,scale)
+        tree.rotation.x = -slopeAngle
     }
 
-    const initTrees = () => {
-        trees.forEach(tree => {
-            tree.pos.set(
-                (Math.random() - 0.5)*FOREST_WIDTH,
-                0,
-                (Math.random() - 0.5)*(FOREST_WIDTH/2) + zOffset,
-            )
-            tree.scale = 1 + (Math.random()*0.4),
-            tree.slope = -slopeAngle
-        }) 
+
+    const initTrees = (scene) => {
+        const treeGroup = new THREE.Group()
+        for(let i=0;i<TREE_COUNT;i++){
+            const tree = scene.children[0].clone(true)
+            spawnTree(tree,FOREST_WIDTH,100)
+            trees.push(tree)
+            treeGroup.add(tree)
+        }
+        return treeGroup
     }
 
     let gameOver = false
@@ -101,14 +103,41 @@ function initGame(){
         document.body.appendChild(msg)
     } 
 
+    const handleYeti = (tree) => {
+        gameOver = true
+        const msg = document.createElement('div')
+        msg.className = "message"
+        msg.innerHTML = 'Oh no! The Yeti got you!'
+        document.body.appendChild(msg)
+    } 
+
     const TREE_HIT_RADIUS = 2
-    const slopeAxis = new THREE.Vector3(1,0,0)
     const SKIER_POS = -50
     const actions = {} 
     let currentAction = null
     let currentSpeed = 0
     let tucking = false
     let snowplowing = false
+    let distanceTraveled = 0
+
+    let yeti = new THREE.Group()
+    const YETI_SPAWN = 500
+    yeti.visible = false
+    yeti.scale.set(4,4,4)
+    let yetiDistance = 0 
+    const yetiActions = {}
+    scene.add(yeti)
+
+    const spawnYeti = () => {
+        console.log("spawning yeti!")
+        yeti.rotation.set(0,0,0)
+        yeti.visible = true
+        yeti.position.set(
+            skier.position.x + (Math.random() > 0.5 ? 50 : -50),
+            0,
+            skier.position.z + 50,
+        )
+    }
 
     const changeAction = (name,weight) => {
         if(currentAction === actions[name]) return
@@ -141,7 +170,7 @@ function initGame(){
         }else{
             const turnScale = Math.min(currentSpeed,40)/40
             let turning = false
-            if(keys.get('ArrowLeft')){
+            if(keys.get('ArrowLeft') || keys.get('MouseLeft')){
                 if(skier.rotation.y > -Math.PI/2){
                     turning = true
                     skier.rotation.y -= delta * 3 
@@ -149,7 +178,7 @@ function initGame(){
                     // TODO scale weight based on speed
                     changeAction("right_turn",turnScale) 
                 }
-            }else if(keys.get('ArrowRight')){
+            }else if(keys.get('ArrowRight') || keys.get('MouseRight')){
                 if(skier.rotation.y < Math.PI/2){
                     turning = true
                     skier.rotation.y += delta * 3 
@@ -194,41 +223,70 @@ function initGame(){
             // Ski / wind friction
             velocity.add(velocity.clone().normalize().multiplyScalar(-1).multiplyScalar(frictionScale))
 
+            distanceTraveled += velocity.z * delta
+
             for(let i=0; i< trees.length;i++){
-                trees[i].pos.z -= velocity.z * delta
-                trees[i].pos.x -= velocity.x * delta
+                trees[i].position.z -= velocity.z * delta
+                trees[i].position.x -= velocity.x * delta
+            }
+
+            if(yeti.visible){
+                yeti.position.z -= velocity.z * delta
+                yeti.position.x -= velocity.x * delta
+                
+                const yetiToSkier = new THREE.Vector3().subVectors(skier.position,yeti.position)
+                const yetiDist = yetiToSkier.length()
+                if(yetiDist < 1){
+                    handleYeti() 
+                }else if(yetiDist < 100){
+                    const yetiVel = yetiToSkier.normalize().multiplyScalar(velocity.length()*0.6)
+                    yeti.position.add(yetiVel.multiplyScalar(delta))
+                }
+
+                if(yeti.position.z < -350){
+                    yeti.visible = false
+                    yetiDistance = distanceTraveled
+                }
+            }else if(distanceTraveled - yetiDistance > YETI_SPAWN){
+                spawnYeti()
             }
         }
         for(let i = 0; i < trees.length; i++){
             const tree = trees[i]
-            if(tree.pos.z < -125){
-                spawnTree(i)
+            if(tree.position.z < -125){
+                spawnTree(tree,10,zOffset)
             }
-            if(new THREE.Vector3().subVectors(skier.position,tree.pos).length() < TREE_HIT_RADIUS){
+            if(new THREE.Vector3().subVectors(skier.position,tree.position).length() < TREE_HIT_RADIUS){
                 handleCrash(tree) 
             }
-            const matrix = new THREE.Matrix4().makeScale(tree.scale,tree.scale,tree.scale)
-            matrix.premultiply(new THREE.Matrix4().makeRotationAxis(slopeAxis,tree.slope))
-            matrix.premultiply(new THREE.Matrix4().makeTranslation(tree.pos.x,tree.pos.y,tree.pos.z))
-            treeInstances.setMatrixAt(i,matrix)
         }
-        treeInstances.instanceMatrix.needsUpdate = true
     }
 
     const animate = () => {
         const delta = clock.getDelta()
         tick(delta)
         mixer.update(delta)
+        yetiMixer.update(delta)
         renderer.render(scene,camera) 
     }
 
     const loader = new GLTFLoader()
+    loader.load("tree.glb", (gltf) => {
+        scene.add(initTrees(gltf.scene))
+    })
+    loader.load("yeti.glb", (gltf) => {
+        yeti.add(gltf.scene)
+        yetiMixer = new THREE.AnimationMixer(gltf.scene)
+        for(const clipName of ["gesticulate.001"]){
+            const clip  = gltf.animations.find((clip) => clip.name === clipName)
+            yetiActions[clipName.replace('.','_')] = yetiMixer.clipAction(clip)
+        }
+        yetiActions.gesticulate_001.play()
+    })
     loader.load("toasterbot_skifree.glb",  (gltf) => {
-        console.log(gltf)
         mixer = new THREE.AnimationMixer( gltf.scene );
         for(const clipName of ["skiing","left.turn","right.turn","tuck","snow.plow"]){
             const clip  = gltf.animations.find((clip) => clip.name === clipName)
-            console.log("loading ",clipName,"as",clipName.replace('.','_'),clip)
             actions[clipName.replace('.','_')] = mixer.clipAction(clip)
         }
 
@@ -238,13 +296,6 @@ function initGame(){
         const toasterBody = gltf.scene.children.find(obj=>obj.name==="rig").children.find(obj=>obj.name==="ToasterBody")
         toasterBody.castShadow = true
         gltf.scene.children.filter(obj=>obj.type==="Mesh").castShadow = true
-
-        treeMesh = gltf.scene.children.find(obj => obj.name === "tree")
-        gltf.scene.remove(treeMesh)
-        treeInstances = new THREE.InstancedMesh(treeMesh.geometry,new THREE.MeshToonMaterial({color:'DarkGreen'}),TREE_COUNT)
-        treeInstances.castShadow = true
-        initTrees()
-        scene.add(treeInstances)
 
         skier.add(gltf.scene)
         renderer.setAnimationLoop(animate) 
