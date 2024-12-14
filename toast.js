@@ -4,11 +4,12 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 function initGame(){
     document.getElementById("boring_stuff").className += " fadeout";
     const speedometer = document.createElement('div')
-    speedometer.className = "speedometer"
+    speedometer.className = "speedometer fadein"
     document.body.appendChild(speedometer)
-    const trackCanvas = document.createElement('canvas')
-    trackCanvas.style.display = "none"
-    document.body.appendChild(trackCanvas)
+    const srcLink = document.createElement('div')
+    srcLink.innerHTML = `<a href="https://github.com/nikolajbaer/nikolajbaer.github.io/blob/master/toast.js" target="_blank">&lt;&gt;</a>`
+    srcLink.className = "srclink fadein"
+    document.body.appendChild(srcLink)
 
     const UP = new THREE.Vector3(0,1,0)
     const keys = new Map()
@@ -21,7 +22,7 @@ function initGame(){
     camera.updateProjectionMatrix()
     window.camera = camera
 
-    const renderer = new THREE.WebGLRenderer({canvas:document.getElementById("canvas")});
+    const renderer = new THREE.WebGLRenderer({canvas:document.getElementById("canvas"),antialias:true});
     renderer.setSize( window.innerWidth, window.innerHeight );
     renderer.setClearColor(0xffffff);
 
@@ -30,7 +31,6 @@ function initGame(){
     const light = new THREE.DirectionalLight( 0xFFFFFF, 3 );
     light.position.set(0,10,0)
     light.target.position.set(0,0,-30)
-    light.castShadow = true
     light.shadow.mapSize.width = 2048 
     camera.updateProjectionMatrix()
     light.shadow.mapSize.height = 2048 
@@ -41,24 +41,22 @@ function initGame(){
     const skier = new THREE.Group()
     skier.position.y = 1.5
     skier.position.z = -125
+    const lastSkierPos = skier.position.clone()
     scene.add(skier)
 
+    let snowParticles = []
+    const snowParticleGravity = new THREE.Vector3(0,-1,0.2)
+    const N_PARTICLES = 100
+    const snowParticleMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(1,8,4),new THREE.MeshStandardMaterial({color:"white"}),N_PARTICLES)
+    snowParticleMesh.frustumCulled = false
+    scene.add(snowParticleMesh)
 
-    const drawingContext = trackCanvas.getContext( '2d' );
-    const snowMaterial = new THREE.MeshStandardMaterial({color:"white"})
-    // TODO
-    //snowMaterial.bumpMap = new THREE.CanvasTexture(drawingContext)
-
-    const snow = new THREE.Mesh(new THREE.PlaneGeometry(1000,1000),snowMaterial)
+    const snow = new THREE.Mesh(new THREE.PlaneGeometry(1000,1000),new THREE.MeshBasicMaterial({color:"white"}))
     snow.rotation.x = -Math.PI/2
-    snow.receiveShadow = true
     scene.add(snow)
 
-    let treeMesh
-    let treeInstances
     const TREE_COUNT = 100
     const trees = []
-    
     let mixer;
     let yetiMixer;
     let velocity = new THREE.Vector3(0,0,10)
@@ -80,7 +78,6 @@ function initGame(){
         tree.scale.set(scale,scale,scale)
         tree.rotation.x = -slopeAngle
     }
-
 
     const initTrees = (scene) => {
         const treeGroup = new THREE.Group()
@@ -111,7 +108,7 @@ function initGame(){
         document.body.appendChild(msg)
     } 
 
-    const TREE_HIT_RADIUS = 2
+    const TREE_HIT_RADIUS = 5 
     const SKIER_POS = -50
     const actions = {} 
     let currentAction = null
@@ -141,8 +138,8 @@ function initGame(){
 
     const changeAction = (name,weight) => {
         if(currentAction === actions[name]) return
-        if(currentAction && currentAction !== actions.skiing){
-            currentAction.fadeOut(0.1).stop()
+        if(currentAction){
+            currentAction.fadeOut(0.1)
         }
         actions[name]
             .reset()
@@ -153,118 +150,171 @@ function initGame(){
         currentAction = actions[name]
     }
 
-    const updateTracks = () => {
-        // TODO draw line from last ski pos to current ski pos
-        // Also shift texture offset up by z-shift, and clear top of texture
-        snowMaterial.needsUpdate = true
-    }
+    const skiTrackPoints = [[],[]]
+    let leftSki
+    let rightSki
 
     const tick = (delta) => {
         if(gameOver){
             return
         }
         currentSpeed = velocity.length()/4 // completely made up scaling factor
-        speedometer.innerHTML = `${currentSpeed.toLocaleString({minimumIntegerDigits:2,maximumFractionDigits:0})}mph`
-        if(skier.position.z < SKIER_POS){
-            skier.position.add(velocity.clone().multiplyScalar(delta))
+        speedometer.innerHTML = `${currentSpeed.toFixed(0)}mph<br>${distanceTraveled.toFixed(0)}m`
+
+        const leftSkiPos = leftSki.getWorldPosition(new THREE.Vector3())
+        const rightSkiPos = rightSki.getWorldPosition(new THREE.Vector3())
+        skiTrackPoints[0].unshift(leftSkiPos)
+        skiTrackPoints[1].unshift(rightSkiPos)
+        skiTrackPoints[0] = skiTrackPoints[0].slice(0,500)
+        skiTrackPoints[1] = skiTrackPoints[1].slice(0,500)
+
+        const turnScale = Math.min(currentSpeed,40)/40 * 0.7 + 0.3
+        let turning = 0 
+        if(keys.get('ArrowLeft') || keys.get('MouseLeft')){
+            if(skier.rotation.y > -Math.PI/2){
+                turning = 1 
+                skier.rotation.y -= delta * 3 
+                // we are facing the opposite way
+                // TODO scale weight based on speed
+                changeAction("right_turn",turnScale) 
+            }
+        }else if(keys.get('ArrowRight') || keys.get('MouseRight')){
+            if(skier.rotation.y < Math.PI/2){
+                turning = -1 
+                skier.rotation.y += delta * 3 
+                changeAction("left_turn",turnScale) 
+            }
         }else{
-            const turnScale = Math.min(currentSpeed,40)/40
-            let turning = false
-            if(keys.get('ArrowLeft') || keys.get('MouseLeft')){
-                if(skier.rotation.y > -Math.PI/2){
-                    turning = true
-                    skier.rotation.y -= delta * 3 
-                    // we are facing the opposite way
-                    // TODO scale weight based on speed
-                    changeAction("right_turn",turnScale) 
-                }
-            }else if(keys.get('ArrowRight') || keys.get('MouseRight')){
-                if(skier.rotation.y < Math.PI/2){
-                    turning = true
-                    skier.rotation.y += delta * 3 
-                    changeAction("left_turn",turnScale) 
-                }
+            changeAction("skiing",1.0)
+        }
+
+        const vFactor = Math.min(velocity.length(),40)/40
+        if(turning && Math.random() > 1 - (vFactor*0.5 + 0.45)){
+            const vThrow = vFactor * 5 
+            if(turning === 1){
+                snowParticles.unshift({position:leftSkiPos.clone(),velocity:new THREE.Vector3(vThrow*(-2*Math.random()-1),vThrow,0),scale:Math.random()*0.3+(vFactor*0.2)})
+            }else if(turning === -1){
+                snowParticles.unshift({position:rightSkiPos.clone(),velocity:new THREE.Vector3(vThrow*(2*Math.random()+1),vThrow,0),scale:Math.random()*0.3+(vFactor*0.2)})
+            }
+        }
+
+        if(!tucking){
+            if(keys.get('ArrowDown')){
+                console.log("tuck")
+                tucking = true
+                actions.tuck.reset().fadeIn(0.2).play()
+            }
+        }else if(tucking){
+            if(!keys.get('ArrowDown')){
+                console.log("untuck")
+                tucking = false
+                actions.tuck.fadeOut(0.1).stop()
+            }
+            if(turning !== 0 && tucking){
+                actions.tuck.setEffectiveWeight(0.5)
+            }else{
+                actions.tuck.setEffectiveWeight(1.0)
+            }
+        }
+
+        if(!snowplowing && keys.get('ArrowUp')){
+            snowplowing = true
+            actions.snow_plow.reset().fadeIn(0.2).play()
+        }else if(snowplowing && !keys.get('ArrowUp')){
+            snowplowing = false
+            actions.snow_plow.fadeOut(0.2).stop()
+        }
+
+        // update velocity in the direction of skier
+        const frictionScale = 0.01 * Math.max(tucking ? 0.1 : (snowplowing ? 50.0 : 1),1)
+        velocity.set(0,0,velocity.length()).applyAxisAngle(UP,skier.rotation.y)
+        velocity.add(GRAVITY.clone().multiplyScalar(delta * Math.sin(slopeAngle)))
+        // Downhill friction
+        velocity.add(FRICTION.clone().multiplyScalar(delta * Math.sin(skier.rotation.y)))
+        // Ski / wind friction
+        velocity.add(velocity.clone().normalize().multiplyScalar(-1).multiplyScalar(frictionScale))
+
+        const dv = velocity.clone().multiplyScalar(delta)
+        distanceTraveled += velocity.z * delta
+        lastSkierPos.copy(dv)
+
+        if(skier.position.z > SKIER_POS){
+            camera.position.add(dv)
+        }
+        skier.position.add(dv)
+
+        if(yeti.visible){
+            const yetiToSkier = new THREE.Vector3().subVectors(skier.position,yeti.position)
+            const yetiDist = yetiToSkier.length()
+            if(yetiDist < 1){
+                handleYeti() 
+            }else if(yetiDist < 100){
+                const yetiVel = yetiToSkier.normalize().multiplyScalar(velocity.length()*0.6)
+                yeti.position.add(yetiVel.multiplyScalar(delta))
             }
 
-            
-            if(!tucking){
-                if(keys.get('ArrowDown')){
-                    console.log("tuck")
-                    tucking = true
-                    actions.tuck.reset().fadeIn(0.2).play()
-                }
-            }else if(tucking){
-                if(!keys.get('ArrowDown')){
-                    console.log("untuck")
-                    tucking = false
-                    actions.tuck.fadeOut(0.1).stop()
-                }
-                if(turning && tucking){
-                    actions.tuck.setEffectiveWeight(0.5)
-                }else{
-                    actions.tuck.setEffectiveWeight(1.0)
-                }
+            if(yeti.position.z < -350){
+                yeti.visible = false
+                yetiDistance = distanceTraveled
             }
-
-            if(!snowplowing && keys.get('ArrowUp')){
-                snowplowing = true
-                actions.snow_plow.reset().fadeIn(0.2).play()
-            }else if(snowplowing && !keys.get('ArrowUp')){
-                snowplowing = false
-                actions.snow_plow.fadeOut(0.2).stop()
-            }
-
-            // update velocity in the direction of skier
-            const frictionScale = 0.01 * Math.max(tucking ? 0.5 : (snowplowing ? 20.0 : 1),1)
-            velocity.set(0,0,velocity.length()).applyAxisAngle(UP,skier.rotation.y)
-            velocity.add(GRAVITY.clone().multiplyScalar(delta * Math.sin(slopeAngle)))
-            // Downhill friction
-            velocity.add(FRICTION.clone().multiplyScalar(delta * Math.sin(skier.rotation.y)))
-            // Ski / wind friction
-            velocity.add(velocity.clone().normalize().multiplyScalar(-1).multiplyScalar(frictionScale))
-
-            distanceTraveled += velocity.z * delta
-
-            for(let i=0; i< trees.length;i++){
-                trees[i].position.z -= velocity.z * delta
-                trees[i].position.x -= velocity.x * delta
-            }
-
-            if(yeti.visible){
-                yeti.position.z -= velocity.z * delta
-                yeti.position.x -= velocity.x * delta
-                
-                const yetiToSkier = new THREE.Vector3().subVectors(skier.position,yeti.position)
-                const yetiDist = yetiToSkier.length()
-                if(yetiDist < 1){
-                    handleYeti() 
-                }else if(yetiDist < 100){
-                    const yetiVel = yetiToSkier.normalize().multiplyScalar(velocity.length()*0.6)
-                    yeti.position.add(yetiVel.multiplyScalar(delta))
-                }
-
-                if(yeti.position.z < -350){
-                    yeti.visible = false
-                    yetiDistance = distanceTraveled
-                }
-            }else if(distanceTraveled - yetiDistance > YETI_SPAWN){
-                spawnYeti()
-            }
+        }else if(distanceTraveled - yetiDistance > YETI_SPAWN){
+            spawnYeti()
         }
         for(let i = 0; i < trees.length; i++){
             const tree = trees[i]
-            if(tree.position.z < -125){
-                spawnTree(tree,10,zOffset)
+            if(tree.position.z < skier.position.z-125){
+                spawnTree(tree,10,zOffset+skier.position.z)
             }
             if(new THREE.Vector3().subVectors(skier.position,tree.position).length() < TREE_HIT_RADIUS){
                 handleCrash(tree) 
             }
+        }
+       
+        const particleGravity = snowParticleGravity.clone().multiplyScalar(delta)
+        for(let i=0;i<snowParticles.length;i++){
+            const p = snowParticles[i]
+            if(p.position.y > p.scale/2){
+                p.position.add(p.velocity.clone().multiplyScalar(-1*delta))
+                p.velocity.add(particleGravity)
+            }
+        }
+        // snowParticles = snowParticles.slice(0,N_PARTICLES)
+        for(let i=0;i<N_PARTICLES;i++){
+            const p = snowParticles[i]
+            if(!p){
+                snowParticleMesh.setMatrixAt(i,new THREE.Matrix4().makeScale(0,0,0))
+            }else{
+                const matrix = new THREE.Matrix4().makeScale(p.scale,p.scale,p.scale)
+                matrix.premultiply(new THREE.Matrix4().makeTranslation(p.position.x,p.position.y,p.position.z))
+                snowParticleMesh.setMatrixAt(i,matrix)
+            }
+        }
+        snowParticleMesh.instanceMatrix.needsUpdate = true
+    }
+
+    let trackGeometries = [new THREE.BufferGeometry(),new THREE.BufferGeometry()]
+    const trackMaterial =  new THREE.MeshBasicMaterial({color:"#eeeeee"})
+    let leftTrack = new THREE.Mesh(trackGeometries[0],trackMaterial)
+    let rightTrack = new THREE.Mesh(trackGeometries[1],trackMaterial)
+    scene.add(leftTrack)
+    scene.add(rightTrack)
+    const tracks = [leftTrack,rightTrack]
+    const updateTracks = () => {
+        if(skiTrackPoints[0].length < 2) return
+        for(let i=0;i<2;i++){
+            const path = new THREE.CatmullRomCurve3(skiTrackPoints[i]) 
+            path.closed = false
+            const newGeometry = new THREE.TubeGeometry(path,500,0.3,4,false)
+            tracks[i].geometry = newGeometry
+            trackGeometries[i].dispose()
+            trackGeometries[i] = newGeometry
         }
     }
 
     const animate = () => {
         const delta = clock.getDelta()
         tick(delta)
+        updateTracks()
         mixer.update(delta)
         yetiMixer.update(delta)
         renderer.render(scene,camera) 
@@ -294,9 +344,20 @@ function initGame(){
         currentAction = actions.skiing
 
         const toasterBody = gltf.scene.children.find(obj=>obj.name==="rig").children.find(obj=>obj.name==="ToasterBody")
-        toasterBody.castShadow = true
-        gltf.scene.children.filter(obj=>obj.type==="Mesh").castShadow = true
-
+        
+        const findChild = (obj3d,name) => {
+            for(const child of obj3d.children) {
+                if(child.name.includes(name)){
+                    return child
+                }else{
+                    const found = findChild(child,name)
+                    if(found) return found
+                }
+            }
+            return null
+        }
+        leftSki = findChild(gltf.scene,"skiL")
+        rightSki = findChild(gltf.scene,"skiR")
         skier.add(gltf.scene)
         renderer.setAnimationLoop(animate) 
     },undefined,console.error)
