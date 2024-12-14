@@ -70,7 +70,7 @@ function initGame(){
 
     const spawnTree = (tree,zRange,offset) => {
         tree.position.set(
-            (Math.random() - 0.5)*FOREST_WIDTH,
+            skier.position.x + (Math.random() - 0.5)*FOREST_WIDTH,
             -0.5,
             (Math.random())*zRange + offset,
         )
