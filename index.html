@@ -35,6 +35,7 @@
     }
     #logo {
       text-align: center;
+      position: relative;
     }
     .wrapper {
       margin: 10px;
@@ -127,13 +128,21 @@
       opacity: 1;
       transition: opacity 1s ease, display 1s ease allow-discrete;
     }
+    #notice {
+      padding: 2px;
+      border: 1px black;
+      position: absolute;
+    }
   </style>
 </head>
 
 <body>
   <canvas id="canvas"></canvas>
   <div id="boring_stuff" class="wrapper">
-    <div id="logo"><img id="🍞" alt="Must toast bread!" src="toasterbot.svg" width="50px" title="ski with me"/></div>
+    <div id="logo">
+      <img id="🍞" alt="Must toast bread!" src="toasterbot.svg" width="50px" title="ski with me"/>
+    </div>
+
     <h1>Nikolaj Baer</h1>
     <section class="about">
       <p>
