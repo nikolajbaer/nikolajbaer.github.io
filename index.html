@@ -97,15 +97,16 @@
       left: 50%;
       position: absolute;
       transform: translate(-50%, -50%);
+      opacity: 1;
     }
     .speedometer {
       position: fixed;
-      top: 10px;
+      bottom: 10px;
       left: 10px;
       text-align: left;
-      font-size: 32px;
+      font-size: 16px;
       font-family: sans-serif;
-      color: #333333;
+      color: #aaa;
       opacity: 0;
     }
     .srclink {
@@ -133,6 +134,44 @@
       border: 1px black;
       position: absolute;
     }
+    #play_cta {
+      opacity: 0;
+      position: fixed;
+      left: 50%;
+      top: 10px;
+      padding-left: 30px;
+      animation: play_cta_in 0.5s forwards 10s, bounce_anim 1s ease-in-out infinite 10.5s;
+    }
+    #play_cta div {
+      position: absolute;
+      top: 0px;
+      font-size: 12px;
+    }
+    #play_cta div p {
+      position: absolute;
+      top: 0px;
+      left: 20px;
+    }
+    @keyframes play_cta_in {
+      0% {
+        opacity: 0;
+        scale: 0% 1;
+      }
+      100% {
+        opacity: 1;
+        scale: 100% 1;
+      }
+    }
+    @keyframes bounce_anim {
+      0%,100% {
+        opacity: 1;
+        padding-left: 30px
+      }
+      50% {
+        opacity: 1;
+        padding-left: 35px;
+      }
+    }
   </style>
 </head>
 
@@ -141,6 +180,14 @@
   <div id="boring_stuff" class="wrapper">
     <div id="logo">
       <img id="🍞" alt="Must toast bread!" src="toasterbot.svg" width="50px" title="ski with me"/>
+    </div>
+    <div id="play_cta">
+      <div>
+        <svg width="130" height="40">
+          <path fill="none" stroke="black" width="2" d="M0 20 L20 0 L20 5 L130 5 L130 35 L20 35 L20 40 L0 20" />
+        </svg>
+        <p>Press to Play!</p>
+      </div>
     </div>
 
     <h1>Nikolaj Baer</h1>
