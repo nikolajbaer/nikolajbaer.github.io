@@ -181,7 +181,7 @@ function initGame(){
         skiTrackPoints[1] = skiTrackPoints[1].slice(0,500)
 
         // handle input
-        if(!gameOver){
+        if(!gameOver && skier.position.z > SKIER_POS){
             const turnScale = Math.min(currentSpeed,20)/20 * 0.7 + 0.3
             let turning = 0 
             if(keys.get('ArrowLeft') || keys.get('MouseLeft')){
