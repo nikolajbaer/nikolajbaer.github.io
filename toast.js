@@ -416,8 +416,10 @@ function initGame(){
 }
 
 function main(){
-    document.getElementById("🍞").addEventListener("click",()=>{
-        initGame();
+    document.getElementById("🍞").addEventListener("click",(e)=>{
+        if(!e.shiftKey){
+            initGame();
+        }
     })
 }
 
